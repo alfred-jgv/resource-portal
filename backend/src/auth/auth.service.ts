@@ -12,7 +12,7 @@ export class AuthService {
 		private jwt: JwtService,
 	) { }
 
-	/*
+	/**
 	 * DOCU: Registers a new user by checking for an existing email,
 	 * hashing the password, saving the user record, and issuing a JWT.
 	 * @param {RegisterDto} dto - Contains email, password, optional name, and role
@@ -40,7 +40,7 @@ export class AuthService {
 		return this.buildToken(user.id, user.email, user.role);
 	}
 
-	/*
+	/**
 	 * DOCU: Authenticates a user by verifying their email and password,
 	 * then issues a JWT if the credentials are valid.
 	 * @param {LoginDto} dto - Contains email and password
@@ -61,7 +61,7 @@ export class AuthService {
 		return this.buildToken(user.id, user.email, user.role);
 	}
 
-	/*
+	/**
 	 * DOCU: Builds and signs a JWT containing the user's id, email, and role.
 	 * @param {string} sub - The user's id, used as the JWT subject
 	 * @param {string} email - The user's email, embedded in the token payload

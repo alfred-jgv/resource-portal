@@ -18,7 +18,7 @@ export class AuthController {
         return this.authService.login(dto);
     }
 
-    /*
+    /**
      * DOCU: Returns the currently authenticated user's info from their JWT.
      * Protected by JwtAuthGuard — only reachable with a valid Bearer token.
      * @param {Request} req - Express request; req.user is populated by JwtStrategy.validate()
