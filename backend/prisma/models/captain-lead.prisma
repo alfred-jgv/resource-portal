@@ -1,0 +1,13 @@
+model CaptainLead {
+  id          String   @id @default(uuid())
+  lastName    String
+  firstName   String
+  middleName  String?
+  club        Club     @relation(fields: [clubId], references: [id])
+  clubId      String
+  linkedinUrl String?
+  credlyUrl   String?
+  createdAt   DateTime @default(now())
+
+  venueRequests VenueRequest[]
+}

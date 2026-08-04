@@ -1,0 +1,16 @@
+model BudgetRequest {
+  id                 String          @id @default(uuid())
+  requesteeType      RequesteeType
+  fullName           String
+  club               Club?           @relation(fields: [clubId], references: [id])
+  clubId             String?
+  nonClubOrgName     String?
+  event              Event           @relation(fields: [eventId], references: [id])
+  eventId            String
+  participantTier    ParticipantTier
+  requestedAmount    Decimal
+  budgetBreakdownUrl String
+  officialRequestUrl String
+  eventPrimerUrl     String
+  createdAt          DateTime        @default(now())
+}

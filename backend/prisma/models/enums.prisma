@@ -1,0 +1,60 @@
+enum Role {
+  INFORMATION
+  ALLOCATION
+  WORKFORCE
+  ADMIN
+}
+
+enum ClubType {
+  STUDENT_BUILDER_GROUP
+  LEARNING_CLUB
+}
+
+enum IslandGroup {
+  LUZON
+  VISAYAS
+  MINDANAO
+}
+
+enum RequesteeType {
+  CLUB
+  NON_CLUB
+}
+
+enum ParticipantTier {
+  S
+  A
+  B
+  C
+}
+
+enum EventType {
+  TECHNICAL
+  LEADERSHIP
+  SUSTAINABILITY
+  CAREER_GROWTH
+  DIVERSITY
+}
+
+enum Department {
+  EXECUTIVES
+  RESOURCE
+  OPERATIONS
+  TECHNOLOGY
+  RELATIONS
+  MULTIMEDIA
+  LEARNING_CLUBS
+  SKILL_BUILDERS
+  BUILDHERS_PLUS
+}
+
+enum Floor {
+  FLOOR_15
+  FLOOR_21
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+}

@@ -1,0 +1,16 @@
+model VenueRequest {
+  id                String      @id @default(uuid())
+  club              Club        @relation(fields: [clubId], references: [id])
+  clubId            String
+  clubHead          CaptainLead @relation(fields: [clubHeadId], references: [id])
+  clubHeadId        String
+  event             Event       @relation(fields: [eventId], references: [id])
+  eventId           String
+  projectProfileUrl String
+  reservationDate   DateTime
+  startTime         DateTime
+  endTime           DateTime
+  floor             Floor
+  numberOfPax       Int
+  createdAt         DateTime    @default(now())
+}

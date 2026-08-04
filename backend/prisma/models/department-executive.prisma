@@ -1,0 +1,13 @@
+model DepartmentExecutive {
+  id            String     @id @default(uuid())
+  lastName      String
+  firstName     String
+  middleName    String?
+  club          Club       @relation(fields: [clubId], references: [id])
+  clubId        String
+  email         String
+  contactNumber String
+  birthdate     DateTime
+  department    Department
+  createdAt     DateTime   @default(now())
+}

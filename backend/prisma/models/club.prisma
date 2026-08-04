@@ -1,0 +1,17 @@
+model Club {
+  id                String   @id @default(uuid())
+  clubName          String
+  universityName    String
+  clubType          ClubType
+  establishmentDate DateTime
+  memberCount       Int
+  islandGroup       IslandGroup
+  region            String
+  province          String
+  createdAt         DateTime @default(now())
+
+  captainLeads    CaptainLead[]
+  budgetRequests  BudgetRequest[]
+  departmentExecs DepartmentExecutive[]
+  venueRequests   VenueRequest[]
+}

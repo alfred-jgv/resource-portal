@@ -1,0 +1,10 @@
+model Task {
+  id             String     @id @default(uuid())
+  taskName       String
+  taskDetails    String
+  assignedDate   DateTime
+  deadline       DateTime
+  assignedOffice Role
+  status         TaskStatus @default(PENDING)
+  createdAt      DateTime   @default(now())
+}

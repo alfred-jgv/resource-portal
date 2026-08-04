@@ -1,0 +1,14 @@
+model Event {
+  id                   String    @id @default(uuid())
+  eventName            String
+  startDate            DateTime
+  endDate              DateTime
+  eventType            EventType
+  expectedParticipants Int
+  location             String
+  eventLink            String?
+  createdAt            DateTime  @default(now())
+
+  budgetRequests BudgetRequest[]
+  venueRequests  VenueRequest[]
+}
