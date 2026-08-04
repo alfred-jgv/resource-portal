@@ -1,2 +1,99 @@
-# awssug-resource-department
-A scalable full-stack resource hub that enables users to browse, organize, and manage curated resources using React, NestJS, and PostgreSQL.
+# AWSSUG-Resource Department Website
+
+A modern full-stack resource platform built with **React**, **NestJS**, and **Supabase (PostgreSQL)**. The application enables users to discover, organize, and manage resources through a responsive and user-friendly interface.
+
+## Features
+
+- User authentication
+- Browse and search resources
+- Categorize and organize resources
+- Responsive user interface
+- RESTful API with NestJS
+- PostgreSQL relational database
+- Secure backend architecture
+- Modern React frontend
+
+## Tech Stack
+
+### Frontend
+- React
+- TypeScript
+- React Router
+- Axios
+- CSS
+
+### Backend
+- NestJS
+- TypeScript
+- Prisma
+- JWT Authentication
+- REST API
+
+### Database
+- Supabase (PostgreSQL)
+
+## Project Structure
+
+```
+.
+├── frontend/
+│   ├── src/
+│   └── ...
+├── backend/
+│   ├── src/
+│   └── ...
+└── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v20 or later recommended)
+- npm
+- Supabase project
+
+### Installation
+
+Clone the repository.
+
+```bash
+git clone https://github.com/your-username/resource-hub.git
+cd resource-hub
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+## Environment Variables
+
+Create a `.env` file inside the backend directory.
+
+```env
+DATABASE_URL=
+
+JWT_SECRET=
+
+SUPABASE_URL=
+
+SUPABASE_ANON_KEY=
+```
+
+Update the values with your own configuration.
+
+## License
+
+This project is licensed under the MIT License.
