@@ -19,27 +19,20 @@ import { RolesGuard } from './roles.guard'
  *   first so that `request.user` is populated before `RolesGuard`
  *   performs role checks.
  *
- * Last Updated: 2026-08-04
+ * Last Updated: 2026-08-05
  * Author: Alfred
  * Last Updated By: Alfred
  */
 @Module({
-    imports: [
-        PassportModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET || 'dev-secret',
-            signOptions: { expiresIn: '7d' },
-        }),
-    ],
-    controllers: [AuthController],
-    providers: [
-        AuthService,
-        JwtStrategy,
-        JwtAuthGuard,
-        RolesGuard,
-        { provide: APP_GUARD, useClass: JwtAuthGuard },
-        { provide: APP_GUARD, useClass: RolesGuard },
-    ],
-    exports: [JwtModule],
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'dev-secret',
+      signOptions: { expiresIn: '1d' },
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtModule],
 })
 export class AuthModule {}

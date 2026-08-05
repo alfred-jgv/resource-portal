@@ -1,98 +1,104 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Resource Hub Backend - AI Continuation Roadmap
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Last updated: 2026-08-05
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This file is a handoff guide for any AI/engineer continuing work in this NestJS + Prisma + Supabase backend.
 
-## Description
+## 1) Current Status
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Implemented modules
+- auth
+- clubs
+- captain-leads
+- events
+- department-executives
+- budget-requests
+- venue-requests
+- tasks
 
-## Project setup
+Implemented security baseline
+- Global request throttling with @nestjs/throttler
+- Auth route throttling (register/login)
+- Helmet security headers
+- Global payload size limits
+- CORS allowlist via env variable
+- Strict ValidationPipe settings
+- Upload constraints for PDF routes (type and size checks)
 
-```bash
-$ npm install
-```
+Upload handling currently implemented
+- budget-requests: accepts multipart files, uploads to Supabase Storage, stores resulting URLs
+- venue-requests: accepts multipart files, uploads to Supabase Storage, stores resulting URLs
 
-## Compile and run the project
+## 2) Important Files
 
-```bash
-# development
-$ npm run start
+App bootstrap and security
+- src/main.ts
+- src/app.module.ts
 
-# watch mode
-$ npm run start:dev
+Auth and guards
+- src/auth/auth.controller.ts
+- src/auth/jwt-auth.guard.ts
+- src/auth/roles.guard.ts
+- src/auth/roles.decorator.ts
 
-# production mode
-$ npm run start:prod
-```
+Budget request flow
+- src/budget-requests/budget-requests.controller.ts
+- src/budget-requests/budget-requests.service.ts
+- src/budget-requests/dto/create-budget-request.dto.ts
 
-## Run tests
+Venue request flow
+- src/venue-requests/venue-requests.controller.ts
+- src/venue-requests/venue-requests.service.ts
+- src/venue-requests/dto/create-venue-request.dto.ts
 
-```bash
-# unit tests
-$ npm run test
+Task flow
+- src/tasks/tasks.controller.ts
+- src/tasks/tasks.service.ts
+- src/tasks/dto/create-task.dto.ts
+- src/tasks/dto/update-task.dto.ts
 
-# e2e tests
-$ npm run test:e2e
+Environment template
+- .env.example
 
-# test coverage
-$ npm run test:cov
-```
+## 3) Required Environment Variables
 
-## Deployment
+Database and auth
+- DATABASE_URL
+- DIRECT_URL
+- JWT_SECRET
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Supabase storage
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+- SUPABASE_STORAGE_BUCKET
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Security tuning
+- TRUST_PROXY (true/false)
+- CORS_ORIGIN (comma-separated list)
+- BODY_LIMIT (example: 1mb)
+- MAX_UPLOAD_SIZE_BYTES (example: 5242880)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## 4) Known Architecture Decisions
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- Prisma client uses driver adapter (PrismaPg) and generated client path under generated/prisma.
+- DateTime fields are normalized in service layer with new Date(...).
+- Role-based access uses JwtAuthGuard and RolesGuard patterns established in existing modules.
+- Tasks are admin-managed for writes, but reads are role-filtered:
+  - ADMIN sees all tasks
+  - Other roles only see assignedOffice matching their role
+- Storage files are uploaded by backend and DB stores URLs, not binary files.
 
-## Resources
+## 5) Production Readiness Checklist
 
-Check out a few resources that may come in handy when working with NestJS:
+- Use strong JWT secret, rotate periodically
+- Restrict CORS_ORIGIN to real frontend domains only
+- Set TRUST_PROXY correctly on deployed platform
+- Use private storage bucket and signed URLs if files are sensitive
+- Add monitoring/logging with redaction for auth and secrets
+- Review Supabase RLS posture if frontend will ever access Supabase directly
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 6) Notes for Future AI
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- This repo uses npm.cmd in PowerShell on this machine due execution-policy restrictions on npm.ps1.
+- If tests fail around Supabase storage configuration, verify env reads happen at method call time, not class initialization.
+- Keep changes incremental; avoid broad refactors unless requested.

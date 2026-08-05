@@ -29,6 +29,7 @@ describe('ClubsController', () => {
         controller = module.get<ClubsController>(ClubsController);
     });
 
+    // Verifies that the controller forwards the list request to the service.
     it('findAll() delegates to ClubsService.findAll', async () => {
         const result = await controller.findAll();
 
@@ -36,6 +37,7 @@ describe('ClubsController', () => {
         expect(result).toEqual([mockClub]);
     });
 
+    // Verifies that the controller forwards the lookup request with the id.
     it('findOne() delegates to ClubsService.findOne with the id', async () => {
         const result = await controller.findOne('1');
 
@@ -43,6 +45,7 @@ describe('ClubsController', () => {
         expect(result).toEqual(mockClub);
     });
 
+    // Verifies that the controller forwards the create payload to the service.
     it('create() delegates to ClubsService.create with the dto', async () => {
         const dto = { clubName: 'Test Builders Club' } as any;
         const result = await controller.create(dto);
@@ -51,6 +54,7 @@ describe('ClubsController', () => {
         expect(result).toEqual(mockClub);
     });
 
+    // Verifies that the controller forwards the delete request with the id.
     it('remove() delegates to ClubsService.remove with the id', async () => {
         const result = await controller.remove('1');
 
