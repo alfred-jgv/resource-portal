@@ -90,9 +90,15 @@ JWT_SECRET=
 SUPABASE_URL=
 
 SUPABASE_ANON_KEY=
+
+SUPABASE_SERVICE_ROLE_KEY=
+
+SUPABASE_STORAGE_BUCKET=documents
 ```
 
 Update the values with your own configuration.
+
+For document uploads, create the storage bucket in Supabase first, then store its name in `SUPABASE_STORAGE_BUCKET`. The backend uploads the PDF to that bucket with the service role key and saves the resulting file URL in Prisma.
 
 ## License
 

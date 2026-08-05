@@ -45,6 +45,7 @@ describe('ClubsService', () => {
     });
 
     describe('create', () => {
+        // Verifies that a club is created through Prisma with the validated data.
         it('creates a club via prisma.club.create', async () => {
             prisma.club.create.mockResolvedValue(mockClub);
 
@@ -67,6 +68,7 @@ describe('ClubsService', () => {
     });
 
     describe('findAll', () => {
+        // Verifies that the service returns clubs ordered newest first.
         it('returns all clubs ordered by newest first', async () => {
             prisma.club.findMany.mockResolvedValue([mockClub]);
 
@@ -78,6 +80,7 @@ describe('ClubsService', () => {
     });
 
     describe('findOne', () => {
+        // Verifies that an existing club is returned by id.
         it('returns the club when found', async () => {
             prisma.club.findUnique.mockResolvedValue(mockClub);
 
@@ -86,6 +89,7 @@ describe('ClubsService', () => {
             expect(result).toEqual(mockClub);
         });
 
+        // Verifies that a missing club triggers a not-found error.
         it('throws NotFoundException when club does not exist', async () => {
             prisma.club.findUnique.mockResolvedValue(null);
 
@@ -94,6 +98,7 @@ describe('ClubsService', () => {
     });
 
     describe('remove', () => {
+        // Verifies that an existing club is deleted after lookup succeeds.
         it('deletes the club when it exists', async () => {
             prisma.club.findUnique.mockResolvedValue(mockClub);
             prisma.club.delete.mockResolvedValue(mockClub);
@@ -104,6 +109,7 @@ describe('ClubsService', () => {
             expect(result).toEqual(mockClub);
         });
 
+        // Verifies that delete is skipped when the club cannot be found.
         it('throws NotFoundException instead of deleting when club does not exist', async () => {
             prisma.club.findUnique.mockResolvedValue(null);
 
