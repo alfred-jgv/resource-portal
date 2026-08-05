@@ -1,23 +1,18 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { APP_GUARD } from '@nestjs/core'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
 import { JwtStrategy } from './jwt.strategy'
-import { JwtAuthGuard } from './jwt-auth.guard'
-import { RolesGuard } from './roles.guard'
 
 /**
- * DOCU: AuthModule sets up JWT authentication and registers
- * global guards for authentication and role-based access control.
+ * DOCU: Configures authentication services and JWT support.
  *
- * - Registers `JwtModule` for token signing/verification.
- * - Provides `JwtStrategy` for Passport JWT validation.
- * - Registers `JwtAuthGuard` and `RolesGuard` as global guards via
- *   the `APP_GUARD` token. Order matters: `JwtAuthGuard` is provided
- *   first so that `request.user` is populated before `RolesGuard`
- *   performs role checks.
+ * - Registers `PassportModule` for authentication strategies.
+ * - Configures `JwtModule` for signing and verifying JWT access tokens.
+ * - Provides `AuthService` for authentication-related business logic.
+ * - Registers `JwtStrategy` for validating JWT Bearer tokens with Passport.
+ * - Exports `JwtModule` so other modules can inject `JwtService` if needed.
  *
  * Last Updated: 2026-08-05
  * Author: Alfred
