@@ -1,4 +1,4 @@
-# Resource Hub Backend - AI Continuation Roadmap
+# Resource Hub Backend
 
 Last updated: 2026-08-05
 
@@ -97,7 +97,7 @@ Security tuning
 - Add monitoring/logging with redaction for auth and secrets
 - Review Supabase RLS posture if frontend will ever access Supabase directly
 
-## 6) Notes for Future AI
+## 6) Notes for Future AI Prompting (If Using AI for Development)
 
 - This repo uses npm.cmd in PowerShell on this machine due execution-policy restrictions on npm.ps1.
 - If tests fail around Supabase storage configuration, verify env reads happen at method call time, not class initialization.
