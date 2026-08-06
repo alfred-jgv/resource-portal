@@ -1,55 +1,48 @@
-import { useState } from 'react';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { TokenProvider } from './context/TokenContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import RootLayout from './components/RootLayout';
+
+import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
-import ClubsPage from './pages/ClubsPage';
-import CaptainLeadsPage from './pages/CaptainLeadsPage';
-import EventsPage from './pages/EventsPage';
-import DepartmentExecutivesPage from './pages/DepartmentExecutivesPage';
 import BudgetRequestsPage from './pages/BudgetRequestsPage';
 import VenueRequestsPage from './pages/VenueRequestsPage';
+import EventsPage from './pages/EventsPage';
+import ClubsPage from './pages/ClubsPage';
+import CaptainLeadsPage from './pages/CaptainLeadsPage';
+import DepartmentExecutivesPage from './pages/DepartmentExecutivesPage';
 import TasksPage from './pages/TasksPage';
 
-const TABS = [
-    { key: 'auth', label: 'Auth', Component: AuthPage },
-    { key: 'clubs', label: 'Clubs', Component: ClubsPage },
-    { key: 'captain-leads', label: 'Captain & Leads', Component: CaptainLeadsPage },
-    { key: 'events', label: 'Events', Component: EventsPage },
-    { key: 'department-executives', label: 'Dept. Executives', Component: DepartmentExecutivesPage },
-    { key: 'budget-requests', label: 'Budget Requests', Component: BudgetRequestsPage },
-    { key: 'venue-requests', label: 'Venue Requests', Component: VenueRequestsPage },
-    { key: 'tasks', label: 'Tasks', Component: TasksPage },
-];
+const router = createBrowserRouter([
+    {
+        element: <RootLayout />,
+        children: [
+            // Public routes — sidebar shows only if a session exists
+            { path: '/', element: <HomePage /> },
+            { path: '/budget-requests', element: <BudgetRequestsPage /> },
+            { path: '/venue-requests', element: <VenueRequestsPage /> },
+            { path: '/login', element: <AuthPage /> },
 
-/*
- * DOCU: Root component — sidebar nav across every module, plus the
- * TokenProvider so tokens grabbed on the Auth tab are available
- * everywhere else. This is intentionally undesigned: the point is to
- * exercise every endpoint (including file uploads and role checks)
- * before any real UI gets built on top of it.
- *
- * Last Updated: 2026-08-06
- * Author: Alfred
- * Last Updated By: Alfred
- */
+            // Protected routes — still gated by ProtectedRoute for auth check
+            {
+                element: <ProtectedRoute />,
+                children: [
+                    { path: '/captain-leads', element: <CaptainLeadsPage /> },
+                    { path: '/clubs', element: <ClubsPage /> },
+                    { path: '/department-executives', element: <DepartmentExecutivesPage /> },
+                    { path: '/tasks', element: <TasksPage /> },
+                    { path: '/events', element: <EventsPage /> },
+                ],
+            },
+        ],
+    },
+    { path: '*', element: <Navigate to="/" replace /> },
+]);
+
 export default function App() {
-    const [active, setActive] = useState('auth');
-    const ActiveComponent = TABS.find((t) => t.key === active)?.Component ?? AuthPage;
-
     return (
         <TokenProvider>
-            <div className="app">
-                <aside className="sidebar">
-                    <h1>API Tester</h1>
-                    {TABS.map((t) => (
-                        <button key={t.key} className={t.key === active ? 'active' : ''} onClick={() => setActive(t.key)}>
-                            {t.label}
-                        </button>
-                    ))}
-                </aside>
-                <main className="main">
-                    <ActiveComponent />
-                </main>
-            </div>
+            <RouterProvider router={router} />
         </TokenProvider>
     );
 }

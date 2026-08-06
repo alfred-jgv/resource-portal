@@ -7,13 +7,19 @@
  * Author: Alfred
  * Last Updated By: Alfred
  */
+export interface AuthUser {
+    email: string;
+    role: string;
+}
 
 export interface FieldConfig {
     name: string;
     label: string;
-    type: 'text' | 'number' | 'select' | 'file' | 'date' | 'datetime';
+    type: 'text' | 'number' | 'select' | 'file' | 'date' | 'datetime' | 'reference';
     options?: string[];
     placeholder?: string;
+    refEndpoint?: string;     // e.g. '/clubs' — only used when type is 'reference'
+    refLabelKeys?: string[];  // which fields to show in the picker, e.g. ['clubName', 'universityName']
 }
 
 export interface SavedToken {

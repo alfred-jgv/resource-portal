@@ -1,38 +1,66 @@
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { SavedToken } from '../types';
+
+export const TOKEN_KEY = 'rdms_token';
 
 export interface TokenContextValue {
-    tokens: SavedToken[];
-    addToken: (label: string, token: string) => void;
-    removeToken: (label: string) => void;
+    token: string | null;
+    role: string | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    login: (token: string) => void;
+    logout: () => void;
 }
 
 export const TokenContext = createContext<TokenContextValue | null>(null);
 
 /*
- * DOCU: Holds every Bearer token grabbed during this session (from
- * register/login, or pasted manually), labeled so any module form can
- * offer "send as INFORMATION" / "send as ADMIN" etc. via a dropdown.
- * In-memory only — refreshing the page clears it.
- *
- * Last Updated: 2026-08-06
- * Author: Alfred
- * Last Updated By: Alfred
+ * DOCU: Decodes the JWT payload client-side to read `role` — no
+ * signature verification needed here, the backend already validates
+ * the token on every request; this is purely for UI gating.
  */
+function decodeRole(token: string): string | null {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.role ?? null;
+    } catch {
+        return null;
+    }
+}
+
 export function TokenProvider({ children }: { children: ReactNode }) {
-    const [tokens, setTokens] = useState<SavedToken[]>([]);
+    const [token, setToken] = useState<string | null>(null);
+    const [role, setRole] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    function addToken(label: string, token: string) {
-        setTokens((prev) => [...prev.filter((t) => t.label !== label), { label, token }]);
-    }
+    useEffect(() => {
+        const stored = localStorage.getItem(TOKEN_KEY);
+        if (stored) {
+            setToken(stored);
+            setRole(decodeRole(stored));
+        }
+        setIsLoading(false);
+    }, []);
 
-    function removeToken(label: string) {
-        setTokens((prev) => prev.filter((t) => t.label !== label));
-    }
+    const login = useCallback((t: string) => {
+        localStorage.setItem(TOKEN_KEY, t);
+        setToken(t);
+        setRole(decodeRole(t));
+    }, []);
+
+    const logout = useCallback(() => {
+        localStorage.removeItem(TOKEN_KEY);
+        setToken(null);
+        setRole(null);
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('auth:logout', logout);
+        return () => window.removeEventListener('auth:logout', logout);
+    }, [logout]);
 
     return (
-        <TokenContext.Provider value={{ tokens, addToken, removeToken }}>
+        <TokenContext.Provider value={{ token, role, isAuthenticated: !!token, isLoading, login, logout }}>
             {children}
         </TokenContext.Provider>
     );
