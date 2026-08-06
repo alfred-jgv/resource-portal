@@ -40,24 +40,34 @@ const budgetRequestFilesInterceptor = (FileFieldsInterceptor as unknown as (...a
     },
 );
 
+/*
+ * DOCU: POST is public — anyone can submit a budget request without
+ * logging in. GET (list/single) and DELETE are restricted to
+ * ALLOCATION + ADMIN, who review and manage submissions.
+ *
+ * Last Updated: 2026-08-06
+ * Author: Alfred
+ * Last Updated By: Alfred
+ */
 @Controller('budget-requests')
-@UseGuards(JwtAuthGuard)
 export class BudgetRequestsController {
     constructor(private readonly budgetRequestsService: BudgetRequestsService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ALLOCATION, Role.ADMIN)
     findAll() {
         return this.budgetRequestsService.findAll();
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ALLOCATION, Role.ADMIN)
     findOne(@Param('id') id: string) {
         return this.budgetRequestsService.findOne(id);
     }
 
     @Post()
-    @UseGuards(RolesGuard)
-    @Roles(Role.ALLOCATION, Role.ADMIN)
     @UseInterceptors(budgetRequestFilesInterceptor)
     create(
         @Body() dto: CreateBudgetRequestDto,
@@ -72,7 +82,7 @@ export class BudgetRequestsController {
     }
 
     @Delete(':id')
-    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ALLOCATION, Role.ADMIN)
     remove(@Param('id') id: string) {
         return this.budgetRequestsService.remove(id);

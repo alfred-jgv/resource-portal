@@ -36,24 +36,34 @@ const venueRequestFilesInterceptor = (FileFieldsInterceptor as unknown as (...ar
     },
 );
 
+/*
+ * DOCU: POST is public — anyone can submit a venue request without
+ * logging in. GET (list/single) and DELETE are restricted to
+ * WORKFORCE + ADMIN, who review and manage submissions.
+ *
+ * Last Updated: 2026-08-06
+ * Author: Alfred
+ * Last Updated By: Alfred
+ */
 @Controller('venue-requests')
-@UseGuards(JwtAuthGuard)
 export class VenueRequestsController {
     constructor(private readonly venueRequestsService: VenueRequestsService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.WORKFORCE, Role.ADMIN)
     findAll() {
         return this.venueRequestsService.findAll();
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.WORKFORCE, Role.ADMIN)
     findOne(@Param('id') id: string) {
         return this.venueRequestsService.findOne(id);
     }
 
     @Post()
-    @UseGuards(RolesGuard)
-    @Roles(Role.WORKFORCE, Role.ADMIN)
     @UseInterceptors(venueRequestFilesInterceptor)
     create(
         @Body() dto: CreateVenueRequestDto,
@@ -66,7 +76,7 @@ export class VenueRequestsController {
     }
 
     @Delete(':id')
-    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.WORKFORCE, Role.ADMIN)
     remove(@Param('id') id: string) {
         return this.venueRequestsService.remove(id);
