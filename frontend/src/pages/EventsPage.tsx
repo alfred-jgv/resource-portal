@@ -17,5 +17,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function EventsPage() {
-    return <ModuleForm title="Event Tracker" endpoint="/events" fields={fields} />;
+    return <ModuleForm title="Events" endpoint="/events" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} />
 }

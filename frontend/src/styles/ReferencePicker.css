@@ -1,0 +1,22 @@
+/* =========================================
+   ReferencePicker — nested inside a .rd-field
+   wrapper wherever ModuleForm renders a
+   'reference' field, so the input/select
+   inside it already inherit theming from
+   primitives.css's ".rd-field input/select"
+   rules. Only the internal stacking/gap and
+   the error text are unique to this component.
+   ========================================= */
+
+.rd-refpicker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rd-space-2);
+}
+
+.rd-refpicker-error {
+    margin: 0;
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-xs);
+    color: #ff6b6b;
+}

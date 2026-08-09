@@ -13,5 +13,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function ClubsPage() {
-    return <ModuleForm title="Club Registry" endpoint="/clubs" fields={fields} />;
+    return <ModuleForm title="Clubs" endpoint="/clubs" fields={fields} createRoles={['INFORMATION', 'ADMIN']} />
 }

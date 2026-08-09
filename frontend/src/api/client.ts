@@ -1,20 +1,21 @@
 import type { ApiResult } from '../types';
+import { TOKEN_KEY } from '../context/TokenContext';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
 
 /*
- * DOCU: Generic fetch wrapper used by every module form. Sends either
- * JSON or multipart/form-data depending on `isMultipart`, attaches a
- * Bearer token if provided, and always resolves to a normalized
- * { status, data } shape — even on non-2xx responses — so the UI can
- * show the raw result instead of throwing on 4xx/5xx.
+ * DOCU: Fetch wrapper used by every module page. Auto-attaches the
+ * active session token from localStorage (no need to pass one), and
+ * on 401 dispatches 'auth:logout' (TokenContext clears state) then
+ * hard-redirects to /login. Manual `token` param still works if ever
+ * needed, but normal calls should omit it.
  *
- * @param {string} method - HTTP method, e.g. 'GET' | 'POST' | 'DELETE'
- * @param {string} path - API path starting with '/', e.g. '/clubs'
- * @param {string} [token] - Bearer token to attach, omit for anonymous requests
- * @param {Record<string, any> | FormData} [body] - Request body
- * @param {boolean} [isMultipart] - If true, body is sent as FormData (for file uploads)
- * @returns {Promise<ApiResult>} - The response status and parsed body
+ * @param {string} method - HTTP method
+ * @param {string} path - API path starting with '/'
+ * @param {Record<string, any> | FormData} [body]
+ * @param {boolean} [isMultipart]
+ * @param {string} [token] - override the stored token; usually omit
+ * @returns {Promise<ApiResult>}
  *
  * Last Updated: 2026-08-06
  * Author: Alfred
@@ -23,12 +24,14 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api
 export async function apiRequest(
     method: string,
     path: string,
-    token?: string,
     body?: Record<string, any> | FormData,
     isMultipart = false,
+    token?: string,
 ): Promise<ApiResult> {
+    const activeToken = token ?? localStorage.getItem(TOKEN_KEY) ?? undefined;
+
     const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
 
     let fetchBody: BodyInit | undefined;
     if (body) {
@@ -41,6 +44,12 @@ export async function apiRequest(
     }
 
     const res = await fetch(`${BASE_URL}${path}`, { method, headers, body: fetchBody });
+
+    if (res.status === 401) {
+        window.dispatchEvent(new Event('auth:logout'));
+        if (window.location.pathname !== '/login') window.location.href = '/login';
+    }
+
     const text = await res.text();
     let data: any;
     try {

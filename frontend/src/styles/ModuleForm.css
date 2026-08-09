@@ -1,0 +1,99 @@
+/* =========================================
+   ModuleForm — shared CRUD component rendered
+   by BudgetRequestsPage, VenueRequestsPage,
+   TasksPage, etc. via <ModuleForm />. Styles
+   here are unique to this component's internal
+   composition (tabs, inline row actions, edit
+   block). Anything that ends up reused OUTSIDE
+   ModuleForm belongs in primitives.css instead,
+   not here.
+   ========================================= */
+
+.rd-moduleform-header {
+    margin-bottom: var(--rd-space-6);
+}
+
+.rd-moduleform-header h2 {
+    font-family: var(--rd-font-heading);
+    font-weight: 700;
+    font-size: var(--rd-text-2xl);
+    color: var(--rd-text-primary);
+    margin: var(--rd-space-1) 0 0;
+    letter-spacing: -0.02em;
+}
+
+/* —— Tabs —— */
+.rd-tabs {
+    display: flex;
+    gap: var(--rd-space-2);
+    border-bottom: 1px solid var(--rd-border);
+    margin-bottom: var(--rd-space-6);
+}
+
+.rd-tab {
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    font-weight: 600;
+    color: var(--rd-text-tertiary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: var(--rd-space-3) var(--rd-space-2);
+    margin-bottom: -1px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color var(--rd-transition), border-color var(--rd-transition);
+}
+
+.rd-tab:hover {
+    color: var(--rd-text-primary);
+}
+
+.rd-tab-active,
+.rd-tab-active:hover {
+    color: var(--rd-accent);
+    border-bottom-color: var(--rd-accent);
+}
+
+.rd-tab-panel {
+    padding-top: var(--rd-space-2);
+}
+
+/* —— Row actions (Edit & Delete table) —— */
+.rd-moduleform-row-actions {
+    display: flex;
+    gap: var(--rd-space-2);
+}
+
+.rd-btn-sm {
+    padding: 6px 14px;
+    font-size: var(--rd-text-xs);
+}
+
+.rd-btn-danger {
+    border-color: rgba(255, 107, 107, 0.4);
+    color: #ff6b6b;
+}
+
+.rd-btn-danger:hover {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.08);
+}
+
+/* —— Inline edit block —— */
+.rd-moduleform-edit {
+    background-color: var(--rd-surface);
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    padding: var(--rd-space-6);
+    margin-top: var(--rd-space-4);
+}
+
+/* —— Helper / status text —— */
+.rd-moduleform-note {
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    color: var(--rd-text-tertiary);
+    padding: var(--rd-space-4) 0;
+}

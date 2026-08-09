@@ -1,0 +1,34 @@
+/* =========================================
+   TasksPage — page-specific layout only.
+   Reusable classes (.rd-module, .rd-btn,
+   .rd-btn-ghost, .rd-error-banner, .rd-field,
+   .rd-form-actions, .rd-table, .rd-empty-state)
+   live in primitives.css.
+   ========================================= */
+
+.rd-tasks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--rd-space-6);
+}
+
+.rd-task-form {
+    background-color: var(--rd-surface);
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    padding: var(--rd-space-6);
+    margin-bottom: var(--rd-space-8);
+}
+
+.rd-task-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 var(--rd-space-4);
+}
+
+@media (max-width: 640px) {
+    .rd-task-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

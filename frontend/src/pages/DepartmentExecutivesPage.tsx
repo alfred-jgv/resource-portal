@@ -5,7 +5,7 @@ const fields: FieldConfig[] = [
     { name: 'lastName', label: 'Last Name', type: 'text' },
     { name: 'firstName', label: 'First Name', type: 'text' },
     { name: 'middleName', label: 'Middle Name (optional)', type: 'text' },
-    { name: 'clubId', label: 'Club ID', type: 'text', placeholder: 'paste a real club id' },
+    { name: 'clubId', label: 'Club', type: 'reference', refEndpoint: '/clubs', refLabelKeys: ['clubName', 'universityName'] },
     { name: 'email', label: 'Email', type: 'text' },
     { name: 'contactNumber', label: 'Contact Number', type: 'text' },
     { name: 'birthdate', label: 'Birthdate', type: 'text', placeholder: '2001-03-12T00:00:00.000Z' },
@@ -28,5 +28,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function DepartmentExecutivesPage() {
-    return <ModuleForm title="Department Executives" endpoint="/department-executives" fields={fields} />;
+    return <ModuleForm title="Department Executives" endpoint="/department-executives" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} />
 }
