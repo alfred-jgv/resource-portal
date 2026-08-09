@@ -10,6 +10,7 @@
    ========================================= */
 
 .rd-moduleform-header {
+    margin-top: var(--rd-space-5);
     margin-bottom: var(--rd-space-6);
 }
 

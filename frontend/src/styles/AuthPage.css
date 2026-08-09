@@ -1,0 +1,56 @@
+/* =========================================
+   AuthPage — login screen. Uses .rd-field,
+   .rd-form-actions, .rd-error-banner, .rd-btn,
+   .rd-login, .rd-eyebrow, .rd-lead from
+   primitives.css (and .rd-module for h1
+   typography only — width/margin are
+   overridden below). Centering is handled
+   directly by this page's own wrapper rather
+   than relying on .rd-page's flex-grow, since
+   that's tuned for top-aligned content + a
+   footer, not a vertically centered card.
+   ========================================= */
+
+.rd-auth-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--rd-bg);
+    padding: var(--rd-space-6);
+    box-sizing: border-box;
+}
+
+.rd-auth-back {
+    position: absolute;
+    top: var(--rd-space-6);
+    left: var(--rd-space-6);
+}
+
+.rd-auth-card.rd-module {
+    width: 100%;
+    max-width: 35vw;
+    margin: 0;
+    padding: 0;
+}
+
+.rd-auth-form {
+    margin-top: var(--rd-space-6);
+    background-color: var(--rd-surface);
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    padding: var(--rd-space-8);
+}
+
+.rd-auth-form .rd-btn {
+    width: 100%;
+}
+
+@media (max-width: 520px) {
+    .rd-auth-back {
+        position: static;
+        display: inline-flex;
+        margin-bottom: var(--rd-space-6);
+    }
+}

@@ -8,7 +8,7 @@ const fields: FieldConfig[] = [
     { name: 'clubId', label: 'Club', type: 'reference', refEndpoint: '/clubs', refLabelKeys: ['clubName', 'universityName'] },
     { name: 'email', label: 'Email', type: 'text' },
     { name: 'contactNumber', label: 'Contact Number', type: 'text' },
-    { name: 'birthdate', label: 'Birthdate', type: 'text', placeholder: '2001-03-12T00:00:00.000Z' },
+    { name: 'birthdate', label: 'Birthdate', type: 'date' },
     {
         name: 'department',
         label: 'Department',

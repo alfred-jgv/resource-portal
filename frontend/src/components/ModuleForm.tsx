@@ -97,7 +97,7 @@ function renderFieldInput(
 		case 'select':
 			return (
 				<select value={currentValue} onChange={(e) => onChange(f.name, e.target.value)}>
-					<option value="">-- select --</option>
+					<option value="">select an option</option>
 					{f.options!.map((o) => (
 						<option key={o} value={o}>
 							{o}

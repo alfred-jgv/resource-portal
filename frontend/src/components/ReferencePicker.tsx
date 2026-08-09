@@ -72,7 +72,7 @@ export default function ReferencePicker({ endpoint, labelKeys, value, onChange }
 		<div className="rd-refpicker">
 			<select value={selectValue} disabled={loading} onChange={(e) => onChange(e.target.value)}>
 				<option value="">
-					{loading ? 'Loading…' : options.length === 0 ? 'No records found — create one first' : `-- select (${options.length}) --`}
+					{loading ? 'Loading…' : options.length === 0 ? 'No records found — create one first' : `select an option (${options.length})`}
 				</option>
 				{options.map((o) => (
 					<option key={o.id} value={o.id}>
