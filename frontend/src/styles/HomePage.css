@@ -1,0 +1,12 @@
+/* Public top bar: right-aligned login link,
+   only HomePage renders this exact bar (other
+   pages get their chrome from RootLayout). */
+.rd-topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: var(--rd-space-6);
+    padding-bottom: var(--rd-space-6);
+    margin-bottom: var(--rd-space-16);
+    border-bottom: 1px solid var(--rd-border);
+}

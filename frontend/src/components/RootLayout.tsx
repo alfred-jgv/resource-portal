@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { useTokens } from '../hooks/useTokens';
 import Sidebar from './Sidebar';
+import '../styles/RootLayout.css';
 
 /*
  * DOCU: Wraps every route. Shows the sidebar whenever a session
@@ -8,7 +9,7 @@ import Sidebar from './Sidebar';
  * protected — so an authenticated ALLOCATION user still sees their
  * nav while on /budget-requests, which is a public route.
  *
- * Last Updated: 2026-08-06
+ * Last Updated: 2026-08-08
  * Author: Alfred
  * Last Updated By: Alfred
  */
@@ -22,9 +23,9 @@ export default function RootLayout() {
     }
 
     return (
-        <div className="app">
+        <div className="rd-app">
             <Sidebar />
-            <main className="main">
+            <main className="rd-main">
                 <Outlet />
             </main>
         </div>

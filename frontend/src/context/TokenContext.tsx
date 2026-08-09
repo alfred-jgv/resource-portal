@@ -28,6 +28,23 @@ function decodeRole(token: string): string | null {
     }
 }
 
+/*
+ * DOCU: Reads the JWT's `exp` claim (seconds since epoch) and reports
+ * whether the token has already expired. A token can be well-formed
+ * and still stale — this is what stops a leftover localStorage token
+ * from a past session silently granting sidebar/session access after
+ * it's actually expired server-side.
+ */
+function isExpired(token: string): boolean {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (typeof payload.exp !== 'number') return false; // no exp claim — nothing to check client-side
+        return Date.now() >= payload.exp * 1000;
+    } catch {
+        return true; // unparsable token can't be trusted
+    }
+}
+
 export function TokenProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
@@ -36,8 +53,14 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const stored = localStorage.getItem(TOKEN_KEY);
         if (stored) {
-            setToken(stored);
-            setRole(decodeRole(stored));
+            if (isExpired(stored)) {
+                // Stale session from a previous visit — drop it instead of
+                // treating its mere presence as "logged in".
+                localStorage.removeItem(TOKEN_KEY);
+            } else {
+                setToken(stored);
+                setRole(decodeRole(stored));
+            }
         }
         setIsLoading(false);
     }, []);

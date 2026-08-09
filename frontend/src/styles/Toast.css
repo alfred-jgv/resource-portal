@@ -1,0 +1,75 @@
+/* =========================================
+   Toast notifications — global, mounted once
+   by ToastProvider. Fixed top-right stack that
+   sits above everything else in the app.
+   ========================================= */
+
+.rd-toast-stack {
+    position: fixed;
+    top: var(--rd-space-6);
+    right: var(--rd-space-6);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--rd-space-3);
+    width: min(360px, calc(100vw - var(--rd-space-8)));
+    pointer-events: none;
+}
+
+.rd-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--rd-space-3);
+    background-color: var(--rd-surface);
+    border: 1px solid var(--rd-border);
+    border-left: 3px solid var(--rd-success);
+    border-radius: var(--rd-radius);
+    padding: var(--rd-space-3) var(--rd-space-4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    pointer-events: auto;
+    animation: rd-toast-in 0.18s ease-out;
+}
+
+.rd-toast-error {
+    border-left-color: #ff6b6b;
+}
+
+.rd-toast-message {
+    flex: 1;
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    color: var(--rd-text-primary);
+    line-height: 1.5;
+}
+
+.rd-toast-close {
+    background: transparent;
+    border: none;
+    color: var(--rd-text-tertiary);
+    font-size: var(--rd-text-base);
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+}
+
+.rd-toast-close:hover {
+    color: var(--rd-text-primary);
+}
+
+@keyframes rd-toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .rd-toast-stack {
+        top: var(--rd-space-4);
+        right: var(--rd-space-4);
+    }
+}

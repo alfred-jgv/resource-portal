@@ -1,0 +1,74 @@
+/* =========================================
+   Sidebar — persistent nav for authenticated
+   protected pages.
+   ========================================= */
+
+.rd-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background-color: var(--rd-surface);
+    border-right: 1px solid var(--rd-border);
+    padding: var(--rd-space-6) var(--rd-space-5);
+    box-sizing: border-box;
+}
+
+.rd-sidebar-header {
+    margin-bottom: var(--rd-space-8);
+}
+
+.rd-sidebar-title {
+    font-family: var(--rd-font-heading);
+    font-weight: 700;
+    font-size: var(--rd-text-lg);
+    letter-spacing: -0.01em;
+    color: var(--rd-text-primary);
+    margin: 0 0 var(--rd-space-1);
+}
+
+.rd-sidebar-role {
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rd-text-tertiary);
+    margin: 0;
+}
+
+.rd-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rd-space-1);
+}
+
+.rd-sidebar-link {
+    display: block;
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    font-weight: 500;
+    color: var(--rd-text-secondary);
+    text-decoration: none;
+    padding: var(--rd-space-2) var(--rd-space-3);
+    border-radius: var(--rd-radius);
+    transition: background-color var(--rd-transition), color var(--rd-transition);
+}
+
+.rd-sidebar-link:hover {
+    background-color: var(--rd-surface-hover);
+    color: var(--rd-text-primary);
+}
+
+.rd-sidebar-link--active {
+    background-color: rgba(255, 153, 0, 0.08);
+    color: var(--rd-accent);
+}
+
+.rd-sidebar-footer {
+    margin-top: auto;
+    padding-top: var(--rd-space-6);
+    border-top: 1px solid var(--rd-border);
+}

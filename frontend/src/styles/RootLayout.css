@@ -1,0 +1,16 @@
+/* =========================================
+   RootLayout — authenticated app shell.
+   Renders when a session exists: fixed-width
+   sidebar + main content area.
+   ========================================= */
+
+.rd-app {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--rd-bg);
+}
+
+.rd-main {
+    flex: 1;
+    min-width: 0; /* prevents wide content from pushing the sidebar off-screen */
+}

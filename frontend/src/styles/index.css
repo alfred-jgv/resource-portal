@@ -1,188 +1,86 @@
-/* Deliberately minimal — this is a testing tool, not a designed UI. */
+/* =========================================
+   Resource Department — Design Tokens
+   main.css  |  Colors, Fonts, Spacing Only
+   ========================================= */
 
-* {
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+    /* ── Core Palette ── */
+    --rd-bg: #0F1A24;
+    --rd-surface: #1B2B3A;
+    --rd-surface-hover: #1e3040;
+    --rd-border: #2A3F52;
+
+    /* ── Typography Colors ── */
+    --rd-text-primary: #F4F7FA;
+    --rd-text-secondary: rgba(244, 247, 250, 0.60);
+    --rd-text-tertiary: rgba(244, 247, 250, 0.38);
+
+    /* ── Accent ── */
+    --rd-accent: #FF9900;
+    --rd-accent-hover: #E68A00;
+    --rd-accent-subtle: rgba(255, 153, 0, 0.30);
+
+    /* ── Status ── */
+    --rd-success: #3ECFB2;
+    --rd-success-bg: rgba(62, 207, 178, 0.08);
+    --rd-success-border: rgba(62, 207, 178, 0.18);
+
+    /* ── Fonts ── */
+    --rd-font-heading: 'Space Grotesk', sans-serif;
+    --rd-font-body: 'IBM Plex Sans', sans-serif;
+    --rd-font-mono: 'IBM Plex Mono', monospace;
+
+    /* ── Type Scale ── */
+    --rd-text-xs: 0.6875rem;
+    --rd-text-sm: 0.8125rem;
+    --rd-text-base: 0.9375rem;
+    --rd-text-md: 1.0625rem;
+    --rd-text-lg: 1.125rem;
+    --rd-text-xl: 1.25rem;
+    --rd-text-2xl: 1.5rem;
+    --rd-text-3xl: 2.25rem;
+    --rd-text-4xl: 2.75rem;
+
+    /* ── Spacing Scale ── */
+    --rd-space-1: 4px;
+    --rd-space-2: 8px;
+    --rd-space-3: 12px;
+    --rd-space-4: 16px;
+    --rd-space-5: 20px;
+    --rd-space-6: 24px;
+    --rd-space-7: 28px;
+    --rd-space-8: 32px;
+    --rd-space-10: 40px;
+    --rd-space-12: 48px;
+    --rd-space-14: 56px;
+    --rd-space-16: 64px;
+    --rd-space-20: 80px;
+    --rd-space-24: 96px;
+
+    /* ── Layout ── */
+    --rd-radius: 2px;
+    --rd-max-width: 80vw;
+    --rd-transition: 180ms ease;
+}
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    font-family: ui-monospace, "Cascadia Code", "Courier New", monospace;
-    font-size: 13px;
-    background: #f2f2f2;
-    color: #111;
-}
-
-.app {
-    display: flex;
-    height: 100vh;
-}
-
-.sidebar {
-    width: 200px;
-    flex-shrink: 0;
-    background: #1f1f1f;
-    color: #eee;
-    padding: 12px;
-    overflow-y: auto;
-}
-
-.sidebar h1 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #999;
-    margin: 4px 0 12px;
-}
-
-.sidebar button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 8px 10px;
-    margin-bottom: 4px;
-    background: transparent;
-    border: none;
-    color: #ccc;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 13px;
-}
-
-.sidebar button:hover {
-    background: #333;
-}
-
-.sidebar button.active {
-    background: #3a6df0;
-    color: #fff;
-}
-
-.main {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-}
-
-.module h2 {
-    margin-top: 0;
-}
-
-.token-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    padding: 10px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-}
-
-fieldset {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 12px 16px 16px;
-    margin-bottom: 16px;
-    background: #fff;
-}
-
-legend {
-    padding: 0 6px;
-    font-weight: bold;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-}
-
-.field label {
-    font-weight: bold;
-    margin-bottom: 3px;
-    font-size: 12px;
-}
-
-input,
-select,
-textarea {
-    font-family: inherit;
-    font-size: 13px;
-    padding: 6px 8px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-}
-
-button {
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.actions button {
-    padding: 8px 14px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    background: #3a6df0;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-}
-
-.actions button:hover {
-    background: #2c56cc;
-}
-
-.row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.response {
-    background: #0d0d0d;
-    color: #7ee787;
-    padding: 12px;
-    border-radius: 6px;
-    max-height: 400px;
-    overflow: auto;
-}
-
-.response pre {
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.status-2xx {
-    background: #1a7f37;
-    color: #fff;
-}
-
-.status-4xx {
-    background: #cf222e;
-    color: #fff;
-}
-
-.status-other {
-    background: #9a6700;
-    color: #fff;
-}
-
-.token-list {
-    font-size: 12px;
-    margin-top: 8px;
-}
-
-.token-list div {
-    margin-bottom: 4px;
+    padding: 0;
+    background-color: var(--rd-bg);
+    color: var(--rd-text-primary);
+    font-family: var(--rd-font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
