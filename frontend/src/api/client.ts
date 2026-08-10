@@ -45,7 +45,7 @@ export async function apiRequest(
 
     const res = await fetch(`${BASE_URL}${path}`, { method, headers, body: fetchBody });
 
-    if (res.status === 401) {
+    if (res.status === 401 && activeToken) {
         window.dispatchEvent(new Event('auth:logout'));
         if (window.location.pathname !== '/login') window.location.href = '/login';
     }

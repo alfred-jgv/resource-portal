@@ -58,6 +58,7 @@
 
 .rd-tab-panel {
     padding-top: var(--rd-space-2);
+    padding-bottom: var(--rd-space-8);
 }
 
 /* —— Row actions (Edit & Delete table) —— */
@@ -97,4 +98,15 @@
     font-size: var(--rd-text-sm);
     color: var(--rd-text-tertiary);
     padding: var(--rd-space-4) 0;
+}
+
+/* —— Back-to-home link ——
+   Only rendered when logged out (public Budget/Venue
+   Request pages). Static flow, unlike AuthPage's
+   absolutely-positioned version, since ModuleForm
+   isn't a centered card layout. */
+.rd-moduleform-back {
+    display: inline-flex;
+    margin-top: var(--rd-space-6);
+    margin-bottom: var(--rd-space-6);
 }

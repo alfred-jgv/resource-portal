@@ -1,38 +1,80 @@
 /* =========================================
-   AuthPage — login screen. Uses .rd-field,
-   .rd-form-actions, .rd-error-banner, .rd-btn,
-   .rd-login, .rd-eyebrow, .rd-lead from
-   primitives.css (and .rd-module for h1
-   typography only — width/margin are
-   overridden below). Centering is handled
-   directly by this page's own wrapper rather
-   than relying on .rd-page's flex-grow, since
-   that's tuned for top-aligned content + a
-   footer, not a vertically centered card.
+   AuthPage — two-column login screen.
+   Left column: back link + login card, stacked,
+   top-aligned, fixed reading width. Right column:
+   reserved for supplementary content (illustration,
+   copy, etc.) — fills remaining space.
+
+   .rd-auth-card intentionally does NOT use
+   .rd-module here — .rd-module's max-width is
+   tuned for full-bleed dashboard pages, not a
+   column that's already width-constrained by
+   the two-column split.
    ========================================= */
 
 .rd-auth-page {
-    position: relative;
     min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: var(--rd-bg);
-    padding: var(--rd-space-6);
     box-sizing: border-box;
 }
 
-.rd-auth-back {
-    position: absolute;
-    top: var(--rd-space-6);
-    left: var(--rd-space-6);
+.rd-auth-col {
+    box-sizing: border-box;
 }
 
-.rd-auth-card.rd-module {
-    width: 100%;
-    max-width: 35vw;
-    margin: 0;
-    padding: 0;
+.rd-auth-col-left {
+    flex: 0 0 480px;
+    display: flex;
+    flex-direction: column;
+    padding: var(--rd-space-6) var(--rd-space-8);
+}
+
+.rd-auth-col-right {
+    flex: 1;
+    min-width: 0;
+    background-color: var(--rd-surface);
+    border-left: 1px solid var(--rd-border);
+}
+
+.rd-auth-back {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--rd-space-2);
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    font-weight: 500;
+    color: var(--rd-text-secondary);
+    text-decoration: none;
+    padding: var(--rd-space-2) var(--rd-space-4);
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    background: transparent;
+    transition: color var(--rd-transition), border-color var(--rd-transition), background-color var(--rd-transition);
+}
+
+.rd-auth-back:hover {
+    color: var(--rd-accent);
+    border-color: var(--rd-accent-subtle);
+    background-color: rgba(255, 153, 0, 0.04);
+}
+
+.rd-auth-back svg {
+    transition: transform var(--rd-transition);
+}
+
+.rd-auth-back:hover svg {
+    transform: translateX(-2px);
+}
+
+.rd-auth-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 400px;
 }
 
 .rd-auth-form {
@@ -47,10 +89,19 @@
     width: 100%;
 }
 
-@media (max-width: 520px) {
-    .rd-auth-back {
-        position: static;
-        display: inline-flex;
-        margin-bottom: var(--rd-space-6);
+@media (max-width: 900px) {
+    .rd-auth-page {
+        flex-direction: column;
+    }
+
+    .rd-auth-col-left {
+        flex: none;
+        width: 100%;
+    }
+
+    .rd-auth-col-right {
+        border-left: none;
+        border-top: 1px solid var(--rd-border);
+        min-height: 240px;
     }
 }

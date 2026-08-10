@@ -9,7 +9,7 @@ import '../styles/RootLayout.css';
  * protected — so an authenticated ALLOCATION user still sees their
  * nav while on /budget-requests, which is a public route.
  *
- * Last Updated: 2026-08-08
+ * Last Updated: 2026-08-09
  * Author: Alfred
  * Last Updated By: Alfred
  */
@@ -19,7 +19,11 @@ export default function RootLayout() {
     if (isLoading) return null;
 
     if (!isAuthenticated) {
-        return <Outlet />; // public, unauthenticated view — no sidebar
+        return (
+            <div className="rd-main">
+                <Outlet />
+            </div>
+        );
     }
 
     return (

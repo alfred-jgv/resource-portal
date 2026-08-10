@@ -12,5 +12,5 @@
 
 .rd-main {
     flex: 1;
-    min-width: 0; /* prevents wide content from pushing the sidebar off-screen */
+    min-width: 0;
 }

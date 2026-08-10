@@ -23,7 +23,7 @@ export default function HomePage() {
                     </Link>
                 </div>
 
-                <p className="rd-eyebrow">Internal Operations Portal</p>
+                <p className="rd-eyebrow">AWSSUG Resource Portal</p>
                 <h1>Resource Department</h1>
                 <p className="rd-lead">
                     Submit and track organizational requests. Select a requisition form below to begin.

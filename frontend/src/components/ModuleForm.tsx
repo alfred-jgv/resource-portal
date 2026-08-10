@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { apiRequest } from '../api/client';
 import type { FieldConfig, ApiResult } from '../types';
 import ReferencePicker from './ReferencePicker';
@@ -157,7 +158,7 @@ export default function ModuleForm({
 	createRoles,
 	manageRoles,
 }: ModuleFormProps) {
-	const { role } = useTokens();
+	const { role, isAuthenticated } = useTokens();
 	const toast = useToast();
 	const canCreate = !createRoles || (role !== null && createRoles.includes(role));
 	const canManage = !manageRoles || (role !== null && manageRoles.includes(role));
@@ -402,6 +403,15 @@ export default function ModuleForm({
 
 	return (
 		<div className="rd-module rd-moduleform">
+			{!isAuthenticated && (
+				<Link to="/" className="rd-login rd-moduleform-back">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+						<path d="M19 12H5M12 19l-7-7 7-7" />
+					</svg>
+					Back to home
+				</Link>
+			)}
+
 			<div className="rd-moduleform-header">
 				<h2>{title}</h2>
 			</div>
