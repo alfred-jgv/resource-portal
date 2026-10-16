@@ -11,5 +11,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function CaptainLeadsPage() {
-    return <ModuleForm title="Captain & Leads" endpoint="/captain-leads" fields={fields} createRoles={['INFORMATION', 'ADMIN']} />
+    return <ModuleForm title="Captain & Leads" endpoint="/captain-leads" fields={fields} createRoles={['INFORMATION', 'ADMIN']} dashboardModule="captain-leads" />
 }

@@ -1,12 +1,44 @@
-/* Public top bar: right-aligned login link,
-   only HomePage renders this exact bar (other
-   pages get their chrome from RootLayout). */
+/* Full-width public header. Its contents use the same
+   max-width and gutters as the page body below. */
 .rd-topbar {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding-top: var(--rd-space-6);
-    padding-bottom: var(--rd-space-6);
-    margin-bottom: var(--rd-space-16);
+    min-height: 68px;
+    width: 100%;
+    padding: var(--rd-space-4) max(var(--rd-space-6), calc((100% - var(--rd-max-width)) / 2 + var(--rd-space-6)));
+    background: var(--rd-nav);
     border-bottom: 1px solid var(--rd-border);
+    border-top: 3px solid var(--color-accent);
+}
+
+.rd-topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--rd-space-3);
+    margin-right: auto;
+    color: var(--color-text);
+    font-size: var(--rd-text-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.rd-topbar-logo {
+    width: 38px;
+    height: 38px;
+    margin-right: var(--rd-space-3);
+    object-fit: cover;
+    border: 1px solid var(--rd-border);
+    border-radius: 50%;
+}
+
+.rd-page > .rd-module:first-of-type {
+    padding-top: var(--rd-space-10);
+}
+
+@media (max-width: 640px) {
+    .rd-topbar-brand span {
+        max-width: 180px;
+        line-height: 1.25;
+    }
 }

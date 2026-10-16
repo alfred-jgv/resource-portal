@@ -1,35 +1,61 @@
 /* =========================================
-   Resource Department — Design Tokens
-   main.css  |  Colors, Fonts, Spacing Only
+   AWSSUG PH Resource Department — Design Tokens
+   index.css | Colors, Fonts, Spacing Only
    ========================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Open+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-    /* ── Core Palette ── */
-    --rd-bg: #0F1A24;
-    --rd-surface: #1B2B3A;
-    --rd-surface-hover: #1e3040;
-    --rd-border: #2A3F52;
+    /* ── AWS-inspired AWSSUG PH dark theme ── */
+    --color-nav: #0F1B2A;
+    --color-nav-hover: #23394D;
+    --color-brand: #349576;
+    --color-brand-hover: #2B7D63;
+    --color-brand-pressed: #236650;
+    --color-brand-subtle: #12382F;
+    --color-brand-focus: #8DE0C0;
+    --color-accent: #FFB84D;
+    --color-action: #349576;
+    --color-action-hover: #2B7D63;
+    --color-action-pressed: #236650;
+    --color-action-disabled: #356654;
+    --color-community: #349576;
+    --color-ph-accent: #F2C96D;
+    --color-text: #F2F3F3;
+    --color-text-secondary: #AAB7B8;
+    --color-background: #101D2B;
+    --color-surface: #172B3A;
+    --color-surface-muted: #1D3445;
+    --color-border: #354B5E;
+    --color-success: #29A34A;
+    --color-warning: #E0B84C;
+    --color-danger: #FF6B6B;
 
-    /* ── Typography Colors ── */
-    --rd-text-primary: #F4F7FA;
-    --rd-text-secondary: rgba(244, 247, 250, 0.60);
-    --rd-text-tertiary: rgba(244, 247, 250, 0.38);
-
-    /* ── Accent ── */
-    --rd-accent: #FF9900;
-    --rd-accent-hover: #E68A00;
-    --rd-accent-subtle: rgba(255, 153, 0, 0.30);
+    /* ── Resource Department compatibility aliases ── */
+    --rd-bg: var(--color-background);
+    --rd-nav: var(--color-nav);
+    --rd-nav-hover: var(--color-nav-hover);
+    --rd-surface: var(--color-surface);
+    --rd-surface-hover: var(--color-brand-subtle);
+    --rd-border: var(--color-border);
+    --rd-text-primary: var(--color-text);
+    --rd-text-secondary: var(--color-text-secondary);
+    --rd-text-tertiary: #8FA3B5;
+    --rd-accent: var(--color-brand);
+    --rd-emphasis: var(--color-brand);
+    --rd-accent-hover: var(--color-brand-hover);
+    --rd-accent-subtle: #5FBE9A;
+    --rd-action: var(--color-action);
+    --rd-action-hover: var(--color-action-hover);
 
     /* ── Status ── */
-    --rd-success: #3ECFB2;
-    --rd-success-bg: rgba(62, 207, 178, 0.08);
-    --rd-success-border: rgba(62, 207, 178, 0.18);
+    --rd-success: var(--color-success);
+    --rd-success-bg: #193C35;
+    --rd-success-border: #2F735D;
 
     /* ── Fonts ── */
-    --rd-font-heading: 'Space Grotesk', sans-serif;
-    --rd-font-body: 'IBM Plex Sans', sans-serif;
+    --rd-font-heading: 'Open Sans', 'Helvetica Neue', Roboto, Arial, sans-serif;
+    --rd-font-body: 'Open Sans', 'Helvetica Neue', Roboto, Arial, sans-serif;
     --rd-font-mono: 'IBM Plex Mono', monospace;
 
     /* ── Type Scale ── */
@@ -41,7 +67,7 @@
     --rd-text-xl: 1.25rem;
     --rd-text-2xl: 1.5rem;
     --rd-text-3xl: 2.25rem;
-    --rd-text-4xl: 2.75rem;
+    --rd-text-4xl: 1.75rem;
 
     /* ── Spacing Scale ── */
     --rd-space-1: 4px;
@@ -61,7 +87,7 @@
 
     /* ── Layout ── */
     --rd-radius: 2px;
-    --rd-max-width: 80vw;
+    --rd-max-width: 1200px;
     --rd-transition: 180ms ease;
 }
 
@@ -83,4 +109,54 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scrollbar-color: var(--color-brand) var(--color-nav);
+    scrollbar-width: thin;
+}
+
+* {
+    scrollbar-color: var(--color-brand) var(--color-nav);
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-nav);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-brand);
+    border: 2px solid var(--color-nav);
+    border-radius: var(--rd-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--color-brand-pressed);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--color-nav);
+}
+
+:focus-visible {
+    outline: 3px solid var(--rd-accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }

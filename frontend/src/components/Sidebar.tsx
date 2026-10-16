@@ -36,7 +36,7 @@ export default function Sidebar() {
     return (
         <aside className="rd-sidebar">
             <div className="rd-sidebar-header">
-                <h1 className="rd-sidebar-title">RDMS</h1>
+                <img className="rd-sidebar-logo" src="/AWSSUG-logo.jpg" alt="AWS Student User Group Philippines" />
                 <p className="rd-sidebar-role">Role: {role ?? 'unknown'}</p>
             </div>
 

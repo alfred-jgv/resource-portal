@@ -16,11 +16,19 @@ const CACHE_TTL_MS = 30_000;
 
 const cache = new Map<string, CacheEntry>();
 
+function cacheKey(endpoint: string): string {
+    // List responses can be role-scoped, so never reuse one user's response
+    // for another authenticated session.
+    const sessionToken = localStorage.getItem('rdms_token') ?? 'anonymous';
+    return `${sessionToken}:${endpoint}`;
+}
+
 /*
- * DOCU: GET {endpoint} with caching + in-flight de-duplication. If
- * another caller already requested this same endpoint within
- * CACHE_TTL_MS (or a request to it is still in flight right now), this
- * returns that same promise instead of firing a new network call.
+ * DOCU: GET {endpoint} with session-scoped caching + in-flight
+ * de-duplication. If another caller in the same session already requested
+ * this endpoint within CACHE_TTL_MS (or a request to it is still in flight
+ * right now), this returns that same promise instead of firing a new network
+ * call.
  *
  * This is what stops many independent ReferencePickers/ModuleForm tabs
  * that all reference the same endpoint (e.g. several forms pointing at
@@ -33,21 +41,22 @@ const cache = new Map<string, CacheEntry>();
  * Last Updated By: Alfred
  */
 export function fetchReferenceList(endpoint: string): Promise<ApiResult> {
-    const cached = cache.get(endpoint);
+    const key = cacheKey(endpoint);
+    const cached = cache.get(key);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
         return cached.promise;
     }
     const promise = apiRequest('GET', endpoint);
-    cache.set(endpoint, { timestamp: Date.now(), promise });
+    cache.set(key, { timestamp: Date.now(), promise });
     // If the request fails, don't leave a rejected promise cached — let
     // the next caller retry instead of replaying the same failure for
     // the rest of the TTL window.
-    promise.catch(() => cache.delete(endpoint));
+    promise.catch(() => cache.delete(key));
     return promise;
 }
 
 /*
- * DOCU: Drops a cached endpoint (or everything, if no endpoint given)
+ * DOCU: Drops the current session's cached endpoint (or everything, if no endpoint given)
  * so the next fetchReferenceList call is forced to go to the network.
  * Call this after a create/update/delete against an endpoint so other
  * components referencing it (e.g. a picker for /clubs, after a club
@@ -60,7 +69,7 @@ export function fetchReferenceList(endpoint: string): Promise<ApiResult> {
  */
 export function invalidateReferenceCache(endpoint?: string) {
     if (endpoint) {
-        cache.delete(endpoint);
+        cache.delete(cacheKey(endpoint));
     } else {
         cache.clear();
     }

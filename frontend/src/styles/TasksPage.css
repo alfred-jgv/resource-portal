@@ -66,7 +66,7 @@
 }
 
 .rd-task-card--in-progress {
-    border-left-color: var(--rd-accent);
+    border-left-color: var(--color-brand);
 }
 
 .rd-task-card--done {
@@ -78,7 +78,7 @@
    Reuses the same red already established by
    .rd-error-banner in primitives.css. */
 .rd-task-card--overdue {
-    border-left-color: #ff6b6b;
+    border-left-color: var(--color-danger);
 }
 
 .rd-task-card:hover {
@@ -140,7 +140,7 @@
 }
 
 .rd-task-deadline--overdue {
-    color: #ff6b6b;
+    color: var(--color-danger);
     font-weight: 500;
 }
 
@@ -178,7 +178,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: var(--rd-space-1) 10px;
-    border-radius: 999px;
+    border-radius: var(--rd-radius);
     border: 1px solid transparent;
     flex-shrink: 0;
 }
@@ -196,15 +196,15 @@
 }
 
 .rd-task-status--pending {
-    background-color: rgba(244, 247, 250, 0.06);
+    background-color: var(--color-surface-muted);
     color: var(--rd-text-tertiary);
     border-color: var(--rd-border);
 }
 
 .rd-task-status--in-progress {
-    background-color: rgba(255, 153, 0, 0.08);
-    color: var(--rd-accent);
-    border-color: var(--rd-accent-subtle);
+    background-color: rgba(52, 149, 118, 0.14);
+    color: var(--color-brand-focus);
+    border-color: rgba(95, 190, 154, 0.5);
 }
 
 .rd-task-status--done {

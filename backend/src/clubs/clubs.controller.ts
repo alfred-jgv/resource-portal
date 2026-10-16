@@ -7,7 +7,6 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../../generated/prisma/client';
 
 @Controller('clubs')
-@UseGuards(JwtAuthGuard) // every route below requires login
 export class ClubsController {
     constructor(private readonly clubsService: ClubsService) { }
 
@@ -17,6 +16,7 @@ export class ClubsController {
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
     findOne(@Param('id') id: string) {
         return this.clubsService.findOne(id);
     }

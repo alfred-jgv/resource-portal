@@ -6,12 +6,12 @@
 .rd-sidebar {
     display: flex;
     flex-direction: column;
-    width: 240px;
+    width: 248px;
     flex-shrink: 0;
     height: 100vh;
     position: sticky;
     top: 0;
-    background-color: var(--rd-surface);
+    background-color: var(--rd-nav);
     border-right: 1px solid var(--rd-border);
     padding: var(--rd-space-6) var(--rd-space-5);
     box-sizing: border-box;
@@ -19,6 +19,21 @@
 
 .rd-sidebar-header {
     margin-bottom: var(--rd-space-8);
+    padding-bottom: var(--rd-space-5);
+    border-bottom: 1px solid var(--rd-border);
+    text-align: center;
+}
+
+.rd-sidebar-logo {
+    display: block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--rd-space-4);
+    object-fit: cover;
+    border: 1px solid var(--rd-border);
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .rd-sidebar-title {
@@ -28,6 +43,17 @@
     letter-spacing: -0.01em;
     color: var(--rd-text-primary);
     margin: 0 0 var(--rd-space-1);
+}
+
+.rd-sidebar-title::before {
+    content: 'AWSSUG PH';
+    display: block;
+    margin-bottom: var(--rd-space-3);
+    color: var(--color-community);
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    font-weight: 500;
+    letter-spacing: 0.08em;
 }
 
 .rd-sidebar-role {
@@ -58,13 +84,14 @@
 }
 
 .rd-sidebar-link:hover {
-    background-color: var(--rd-surface-hover);
+    background-color: var(--rd-nav-hover);
     color: var(--rd-text-primary);
 }
 
 .rd-sidebar-link--active {
-    background-color: rgba(255, 153, 0, 0.08);
-    color: var(--rd-accent);
+    background-color: var(--rd-nav-hover);
+    color: var(--color-brand-focus);
+    box-shadow: inset 3px 0 0 var(--rd-emphasis);
 }
 
 .rd-sidebar-footer {

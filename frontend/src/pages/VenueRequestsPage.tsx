@@ -16,5 +16,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function VenueRequestsPage() {
-    return <ModuleForm title="Venue Requests" endpoint="/venue-requests" fields={fields} manageRoles={['WORKFORCE', 'ADMIN']} />
+    return <ModuleForm title="Venue Requests" endpoint="/venue-requests" fields={fields} manageRoles={['WORKFORCE', 'ADMIN']} dashboardModule="venue-requests" />
 }

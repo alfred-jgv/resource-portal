@@ -18,5 +18,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function BudgetRequestsPage() {
-    return <ModuleForm title="Budget Requests" endpoint="/budget-requests" fields={fields} manageRoles={['ALLOCATION', 'ADMIN']} />
+    return <ModuleForm title="Budget Requests" endpoint="/budget-requests" fields={fields} manageRoles={['ALLOCATION', 'ADMIN']} dashboardModule="budget-requests" />
 }

@@ -17,5 +17,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function EventsPage() {
-    return <ModuleForm title="Events" endpoint="/events" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} />
+    return <ModuleForm title="Events" endpoint="/events" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} dashboardModule="events" />
 }

@@ -28,5 +28,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function DepartmentExecutivesPage() {
-    return <ModuleForm title="Department Executives" endpoint="/department-executives" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} />
+    return <ModuleForm title="Department Executives" endpoint="/department-executives" fields={fields} createRoles={['WORKFORCE', 'ADMIN']} dashboardModule="department-executives" />
 }

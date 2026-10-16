@@ -36,6 +36,27 @@
     box-sizing: border-box;
 }
 
+/* Small section label used to identify AWSSUG PH product areas. */
+.rd-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rd-space-2);
+    margin: 0 0 var(--rd-space-3);
+    color: var(--color-community);
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.rd-eyebrow::before {
+    content: '';
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-ph-accent);
+}
+
 /* —— Divider ——
    Generic horizontal rule, used between any
    two sections on any page. */
@@ -58,7 +79,7 @@
     font-weight: 700;
     font-size: var(--rd-text-4xl);
     letter-spacing: -0.03em;
-    line-height: 1.05;
+    line-height: 1.29;
     margin: 0 0 var(--rd-space-3);
     color: var(--rd-text-primary);
 }
@@ -101,9 +122,9 @@
 }
 
 .rd-login:hover {
-    color: var(--rd-accent);
+    color: var(--color-brand-focus);
     border-color: var(--rd-accent-subtle);
-    background-color: rgba(255, 153, 0, 0.04);
+    background-color: var(--color-brand-subtle);
 }
 
 .rd-login svg {
@@ -126,19 +147,38 @@
     font-weight: 600;
     font-size: 0.875rem;
     padding: 10px 22px;
-    background-color: var(--rd-accent);
-    color: var(--rd-bg);
+    background-color: var(--rd-action);
+    color: #16191F;
     border: none;
     border-radius: var(--rd-radius);
     text-decoration: none;
     cursor: pointer;
-    transition: background-color var(--rd-transition);
+    transition: background-color var(--rd-transition), box-shadow var(--rd-transition), transform var(--rd-transition);
     white-space: nowrap;
     letter-spacing: 0.01em;
 }
 
 .rd-btn:hover {
-    background-color: var(--rd-accent-hover);
+    background-color: var(--rd-action-hover);
+}
+
+.rd-btn:active {
+    background-color: var(--color-action-pressed);
+    transform: translateY(1px);
+}
+
+.rd-btn:focus-visible {
+    outline-color: var(--color-brand-focus);
+    box-shadow: 0 0 0 3px rgba(141, 224, 192, 0.28);
+}
+
+.rd-btn:disabled,
+.rd-btn[aria-disabled='true'] {
+    background-color: var(--color-action-disabled);
+    color: #B9D8CB;
+    cursor: not-allowed;
+    opacity: 0.8;
+    transform: none;
 }
 
 /* —— Status badge ——
@@ -193,7 +233,7 @@
     background-color: var(--rd-surface-hover);
     border-color: var(--rd-accent-subtle);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+    box-shadow: none;
 }
 
 /* Perforation line */
@@ -338,9 +378,9 @@
 }
 
 .rd-logout-btn:hover {
-    color: var(--rd-accent);
+    color: var(--color-brand-focus);
     border-color: var(--rd-accent-subtle);
-    background-color: rgba(255, 153, 0, 0.04);
+    background-color: var(--color-brand-subtle);
 }
 
 /* —— Error banner ——
@@ -349,9 +389,9 @@
 .rd-error-banner {
     font-family: var(--rd-font-body);
     font-size: var(--rd-text-sm);
-    color: #ff6b6b;
-    background-color: rgba(255, 107, 107, 0.08);
-    border: 1px solid rgba(255, 107, 107, 0.24);
+    color: var(--color-danger);
+    background-color: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
     border-radius: var(--rd-radius);
     padding: var(--rd-space-3) var(--rd-space-4);
     margin: 0 0 var(--rd-space-5);
@@ -368,11 +408,88 @@
 }
 
 .rd-field label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rd-space-2);
     font-family: var(--rd-font-mono);
     font-size: var(--rd-text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--rd-text-tertiary);
+}
+
+.rd-field-hint {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-brand);
+    border-radius: 50%;
+    color: var(--color-brand-focus);
+    font-family: var(--rd-font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: help;
+    outline: none;
+}
+
+.rd-field-hint {
+    margin-left: var(--rd-space-1);
+}
+
+.rd-field-hint-tooltip {
+    position: absolute;
+    z-index: 10;
+    bottom: calc(100% + var(--rd-space-2));
+    left: 0;
+    width: max-content;
+    max-width: 260px;
+    padding: var(--rd-space-2) var(--rd-space-3);
+    border: 1px solid var(--color-brand);
+    border-left: 3px solid var(--color-ph-accent);
+    border-radius: var(--rd-radius);
+    background: var(--rd-nav);
+    color: var(--rd-text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+    font-family: var(--rd-font-body);
+    font-size: var(--rd-text-sm);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-transform: none;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition: opacity var(--rd-transition), transform var(--rd-transition), visibility var(--rd-transition);
+}
+
+.rd-table-heading {
+    position: relative;
+}
+
+.rd-table-heading > .rd-field-hint {
+    vertical-align: middle;
+}
+
+.rd-table-heading .rd-field-hint-tooltip {
+    bottom: auto;
+    top: calc(100% + var(--rd-space-2));
+}
+
+.rd-field-hint:hover .rd-field-hint-tooltip,
+.rd-field-hint:focus-visible .rd-field-hint-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rd-field-hint:focus-visible {
+    outline: 2px solid var(--color-brand-focus);
+    outline-offset: 2px;
 }
 
 .rd-field input,
@@ -392,7 +509,58 @@
 .rd-field select:focus,
 .rd-field textarea:focus {
     outline: none;
-    border-color: var(--rd-accent-subtle);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 1px var(--color-brand);
+}
+
+.rd-field input[type='file'] {
+    width: 100%;
+    min-height: 42px;
+    padding: var(--rd-space-1);
+    color: var(--rd-text-secondary);
+    cursor: pointer;
+}
+
+.rd-field input[type='file']::file-selector-button {
+    margin-right: var(--rd-space-3);
+    padding: var(--rd-space-2) var(--rd-space-3);
+    border: 1px solid var(--color-brand);
+    border-radius: var(--rd-radius);
+    background: var(--color-brand);
+    color: #10231d;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--rd-transition), border-color var(--rd-transition), color var(--rd-transition);
+}
+
+.rd-field input[type='file']::file-selector-button:hover {
+    border-color: var(--color-brand-hover);
+    background: var(--color-brand-hover);
+}
+
+.rd-field input[type='file']::file-selector-button:active {
+    border-color: var(--color-brand-pressed);
+    background: var(--color-brand-pressed);
+    color: var(--rd-text-primary);
+}
+
+.rd-field input[type='file']:focus-visible {
+    outline: 2px solid var(--color-brand-focus);
+    outline-offset: 2px;
+}
+
+.rd-field input[type='file']:disabled {
+    color: var(--rd-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.rd-field input[type='file']:disabled::file-selector-button {
+    border-color: var(--color-action-disabled);
+    background: var(--color-action-disabled);
+    color: #b9d8cb;
+    cursor: not-allowed;
 }
 
 .rd-form-actions {
@@ -404,31 +572,188 @@
 
 /* —— Data table ——
    Reusable list view for tasks, requests, etc. */
-.rd-table {
+.rd-table-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--rd-space-4);
+    margin-bottom: var(--rd-space-3);
+}
+
+.rd-table-search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rd-space-1);
+    width: min(300px, 100%);
+    margin-left: 0;
+}
+
+.rd-table-search span {
+    color: var(--rd-text-tertiary);
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.rd-table-search-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.rd-table-search-control svg {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--rd-text-tertiary);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    pointer-events: none;
+}
+
+.rd-table-search-control input {
     width: 100%;
+    min-height: 36px;
+    padding: 7px 34px 7px 34px;
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    background: var(--rd-surface);
+    color: var(--rd-text-primary);
+    font: inherit;
+    font-size: var(--rd-text-sm);
+    line-height: 1.35;
+    color-scheme: dark;
+}
+
+.rd-table-search-control input:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 1px var(--color-brand);
+}
+
+.rd-table-search-control input::placeholder {
+    color: var(--rd-text-tertiary);
+}
+
+.rd-table-search-control input::-webkit-search-cancel-button {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border-radius: 50%;
+    background:
+        linear-gradient(45deg, transparent 43%, var(--color-brand-focus) 43%, var(--color-brand-focus) 57%, transparent 57%),
+        linear-gradient(-45deg, transparent 43%, var(--color-brand-focus) 43%, var(--color-brand-focus) 57%, transparent 57%);
+    cursor: pointer;
+}
+
+.rd-table-count {
+    order: -1;
+    margin-right: auto;
+    color: var(--rd-text-tertiary);
+    font-size: var(--rd-text-xs);
+    white-space: nowrap;
+}
+
+.rd-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    border: 1px solid var(--rd-border);
+    background-color: var(--rd-surface);
+}
+
+.rd-table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: var(--rd-text-sm);
 }
 
+.rd-table-data-column {
+    width: 160px;
+}
+
+.rd-table-actions-column {
+    width: 150px;
+}
+
 .rd-table th {
     text-align: left;
+    vertical-align: top;
     font-family: var(--rd-font-mono);
     font-size: var(--rd-text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--rd-text-tertiary);
-    padding: var(--rd-space-3) var(--rd-space-3);
-    border-bottom: 1px solid var(--rd-border);
+    color: var(--rd-text-secondary);
+    background-color: var(--rd-surface-muted);
+    padding: var(--rd-space-2) var(--rd-space-3);
+    border-bottom: 2px solid var(--rd-accent);
+}
+
+.rd-table-heading-content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--rd-space-2);
+    min-height: 34px;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.rd-table-heading-content > .rd-field-hint {
+    flex: 0 0 auto;
 }
 
 .rd-table td {
-    padding: var(--rd-space-3) var(--rd-space-3);
+    padding: var(--rd-space-2) var(--rd-space-3);
     border-bottom: 1px solid var(--rd-border);
     color: var(--rd-text-secondary);
+    vertical-align: top;
+    line-height: 1.45;
+    white-space: nowrap;
+}
+
+.rd-table-cell-value {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rd-table tbody tr {
+    transition: background-color var(--rd-transition);
+}
+
+.rd-table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.rd-table tbody tr:hover {
+    background-color: rgba(52, 149, 118, 0.08);
+}
+
+.rd-table tbody td:first-child {
+    color: var(--rd-text-primary);
+    font-weight: 600;
 }
 
 .rd-table tr:last-child td {
     border-bottom: none;
+}
+
+.rd-table td:last-child,
+.rd-table th:last-child {
+    white-space: nowrap;
+}
+
+.rd-table-actions-heading,
+.rd-table td:last-child {
+    width: 150px;
 }
 
 .rd-empty-state {
@@ -437,6 +762,16 @@
     color: var(--rd-text-tertiary);
     padding: var(--rd-space-8) 0;
     text-align: center;
+}
+
+@media (max-width: 640px) {
+    .rd-table-toolbar {
+        align-items: flex-end;
+    }
+
+    .rd-table-search {
+        width: min(300px, 100%);
+    }
 }
 
 /* —— Secondary button ——
@@ -460,5 +795,17 @@
 
 .rd-btn-ghost:hover {
     border-color: var(--rd-accent-subtle);
-    color: var(--rd-accent);
+    color: var(--color-brand-focus);
+    background-color: var(--color-brand-subtle);
+}
+
+.rd-btn-ghost:active {
+    background-color: var(--color-brand-subtle);
+}
+
+.rd-btn-ghost:disabled,
+.rd-btn-ghost[aria-disabled='true'] {
+    color: var(--rd-text-tertiary);
+    border-color: var(--rd-border);
+    cursor: not-allowed;
 }

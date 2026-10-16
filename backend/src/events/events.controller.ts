@@ -7,7 +7,6 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../../generated/prisma/client';
 
 @Controller('events')
-@UseGuards(JwtAuthGuard)
 export class EventsController {
     constructor(private readonly eventsService: EventsService) { }
 
@@ -17,6 +16,7 @@ export class EventsController {
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
     findOne(@Param('id') id: string) {
         return this.eventsService.findOne(id);
     }

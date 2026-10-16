@@ -10,7 +10,7 @@
    ========================================= */
 
 .rd-moduleform-header {
-    margin-top: var(--rd-space-5);
+    margin-top: var(--rd-space-6);
     margin-bottom: var(--rd-space-6);
 }
 
@@ -26,7 +26,7 @@
 /* —— Tabs —— */
 .rd-tabs {
     display: flex;
-    gap: var(--rd-space-2);
+    gap: var(--rd-space-4);
     border-bottom: 1px solid var(--rd-border);
     margin-bottom: var(--rd-space-6);
 }
@@ -39,7 +39,7 @@
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    padding: var(--rd-space-3) var(--rd-space-2);
+    padding: var(--rd-space-3) var(--rd-space-1);
     margin-bottom: -1px;
     cursor: pointer;
     white-space: nowrap;
@@ -52,8 +52,12 @@
 
 .rd-tab-active,
 .rd-tab-active:hover {
-    color: var(--rd-accent);
-    border-bottom-color: var(--rd-accent);
+    color: var(--color-brand-focus);
+    border-bottom-color: var(--color-brand);
+}
+
+.rd-tab:focus-visible {
+    outline-offset: -2px;
 }
 
 .rd-tab-panel {
@@ -61,35 +65,281 @@
     padding-bottom: var(--rd-space-8);
 }
 
+.rd-tab-intro {
+    display: flex;
+    align-items: center;
+    gap: var(--rd-space-3);
+    margin-bottom: var(--rd-space-4);
+    padding: var(--rd-space-3) var(--rd-space-4);
+    border-left: 2px solid var(--color-brand);
+    background: var(--rd-surface);
+}
+
+.rd-tab-intro strong {
+    flex: 0 0 auto;
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-sm);
+}
+
+.rd-tab-intro span:not(.rd-table-count) {
+    color: var(--rd-text-tertiary);
+    font-size: var(--rd-text-sm);
+}
+
+.rd-dashboard-placeholder {
+    max-width: 640px;
+    padding: var(--rd-space-8);
+    border: 1px solid var(--rd-border);
+    border-left: 3px solid var(--color-brand);
+    background-color: var(--rd-surface);
+}
+
+.rd-dashboard-placeholder-label {
+    display: block;
+    margin-bottom: var(--rd-space-2);
+    color: var(--color-brand-focus);
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.rd-dashboard-placeholder h3 {
+    margin: 0 0 var(--rd-space-2);
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-lg);
+}
+
+.rd-dashboard-placeholder p {
+    max-width: 560px;
+    margin: 0;
+    color: var(--rd-text-secondary);
+    font-size: var(--rd-text-sm);
+}
+
 /* —— Row actions (Edit & Delete table) —— */
 .rd-moduleform-row-actions {
     display: flex;
+    align-items: center;
     gap: var(--rd-space-2);
+    flex-wrap: nowrap;
 }
 
 .rd-btn-sm {
-    padding: 6px 14px;
+    min-width: 58px;
+    padding: 6px 10px;
     font-size: var(--rd-text-xs);
 }
 
 .rd-btn-danger {
-    border-color: rgba(255, 107, 107, 0.4);
-    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.5);
+    color: var(--color-danger);
 }
 
 .rd-btn-danger:hover {
-    border-color: #ff6b6b;
-    color: #ff6b6b;
-    background-color: rgba(255, 107, 107, 0.08);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+    background-color: rgba(255, 107, 107, 0.1);
 }
 
-/* —— Inline edit block —— */
+/* —— Manage workflow —— */
+.rd-manage-intro {
+    justify-content: space-between;
+    gap: var(--rd-space-4);
+}
+
+.rd-manage-intro .rd-table-count {
+    order: 0;
+    margin-right: 0;
+    flex: 0 0 auto;
+}
+
+.rd-modal h3 {
+    margin: 0 0 var(--rd-space-1);
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-lg);
+}
+
+.rd-modal-header p:not(.rd-eyebrow),
+.rd-delete-modal > p:not(.rd-eyebrow) {
+    margin: 0;
+    color: var(--rd-text-secondary);
+    font-size: var(--rd-text-sm);
+}
+
+.rd-manage-toolbar {
+    align-items: flex-end;
+    margin-bottom: var(--rd-space-3);
+}
+
+.rd-manage-toolbar .rd-table-search {
+    width: min(360px, 100%);
+}
+
+/* —— Edit and delete dialogs —— */
+.rd-modal-backdrop {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: var(--rd-space-6);
+    background: rgba(5, 13, 21, 0.78);
+}
+
+.rd-modal {
+    width: min(680px, 100%);
+    max-height: min(860px, calc(100vh - 48px));
+    overflow-y: auto;
+    background: var(--rd-surface);
+    border: 1px solid var(--rd-border);
+    border-top: 3px solid var(--color-brand);
+    border-radius: var(--rd-radius);
+    padding: var(--rd-space-6);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+}
+
+.rd-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--rd-space-5);
+    margin-bottom: var(--rd-space-6);
+}
+
+.rd-modal-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--rd-space-5);
+}
+
+.rd-modal-fields .rd-field {
+    min-width: 0;
+}
+
+.rd-modal-close {
+    align-self: flex-start;
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    background: transparent;
+    color: var(--rd-text-secondary);
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.rd-modal-close:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand-focus);
+}
+
+.rd-modal-close:focus-visible,
+.rd-btn-danger-solid:focus-visible {
+    outline: 2px solid var(--color-brand-focus);
+    outline-offset: 2px;
+}
+
+.rd-field-error {
+    color: var(--color-danger);
+    font-size: var(--rd-text-xs);
+}
+
+.rd-eyebrow-danger {
+    color: var(--color-danger);
+}
+
+.rd-delete-modal {
+    width: min(480px, 100%);
+    border-top-color: var(--color-danger);
+}
+
+.rd-delete-preview {
+    display: grid;
+    gap: var(--rd-space-3);
+    margin: var(--rd-space-5) 0;
+    padding: var(--rd-space-4);
+    border: 1px solid var(--rd-border);
+    background: var(--rd-bg);
+}
+
+.rd-delete-preview div {
+    display: grid;
+    gap: var(--rd-space-1);
+}
+
+.rd-delete-preview span {
+    color: var(--rd-text-tertiary);
+    font-family: var(--rd-font-mono);
+    font-size: var(--rd-text-xs);
+    text-transform: uppercase;
+}
+
+.rd-delete-preview strong {
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-sm);
+    overflow-wrap: anywhere;
+}
+
+.rd-btn-danger-solid {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-danger);
+    border-radius: var(--rd-radius);
+    padding: 10px 16px;
+    background: var(--color-danger);
+    color: #1b0b0b;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rd-btn-danger-solid:hover {
+    background: #e05252;
+    border-color: #e05252;
+}
+
+.rd-btn-danger-solid:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* —— Legacy edit block —— */
 .rd-moduleform-edit {
     background-color: var(--rd-surface);
     border: 1px solid var(--rd-border);
     border-radius: var(--rd-radius);
     padding: var(--rd-space-6);
     margin-top: var(--rd-space-4);
+}
+
+@media (max-width: 640px) {
+    .rd-manage-intro {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--rd-space-3);
+    }
+
+    .rd-manage-intro .rd-table-count {
+        align-self: flex-start;
+    }
+
+    .rd-modal-backdrop {
+        padding: var(--rd-space-3);
+    }
+
+    .rd-modal {
+        max-height: calc(100vh - 24px);
+        padding: var(--rd-space-4);
+    }
+
+    .rd-modal-header {
+        gap: var(--rd-space-3);
+    }
+
+    .rd-modal-fields {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* —— Helper / status text —— */

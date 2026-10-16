@@ -69,7 +69,10 @@ export default function AuthPage() {
             </div>
 
             <div className="rd-auth-col rd-auth-col-right">
-                {/* content goes here */}
+                <div className="rd-auth-brand-panel">
+                    <img src="/AWSSUG-branding.jpg" alt="AWS Student User Group Philippines branding" />
+                    <span>Welcome!!!!!!!! :3</span>
+                </div>
             </div>
         </div>
     );

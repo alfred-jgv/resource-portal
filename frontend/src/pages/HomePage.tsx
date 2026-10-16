@@ -13,21 +13,27 @@ import '../styles/HomePage.css';
 export default function HomePage() {
     return (
         <div className="rd-page">
-            <div className="rd-module">
-                <div className="rd-topbar">
-                    <Link to="/login" className="rd-login">
-                        Login
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </Link>
+            <header className="rd-topbar">
+                <div className="rd-topbar-brand">
+                    <img className="rd-topbar-logo" src="/AWSSUG-logo.jpg" alt="AWS Student User Group Philippines" />
+                    <span>AWS Student User Group Philippines</span>
                 </div>
+                <Link to="/login" className="rd-login">
+                    Login
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </Link>
+            </header>
 
-                <p className="rd-eyebrow">AWSSUG Resource Portal</p>
-                <h1>Resource Department</h1>
-                <p className="rd-lead">
-                    Submit and track organizational requests. Select a requisition form below to begin.
-                </p>
+            <div className="rd-module">
+                <div>
+                    <p className="rd-eyebrow">AWSSUG Resource Portal</p>
+                    <h1>Resource Department</h1>
+                    <p className="rd-lead">
+                        Submit and track organizational requests. Select a requisition form below to begin.
+                    </p>
+                </div>
 
                 <hr className="rd-divider" />
 

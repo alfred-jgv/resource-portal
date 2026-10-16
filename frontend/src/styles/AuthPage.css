@@ -33,8 +33,48 @@
 .rd-auth-col-right {
     flex: 1;
     min-width: 0;
-    background-color: var(--rd-surface);
+    background-color: var(--color-brand-subtle);
     border-left: 1px solid var(--rd-border);
+}
+
+.rd-auth-brand-panel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--rd-space-3);
+    padding: var(--rd-space-8);
+    text-align: center;
+    background:
+        linear-gradient(135deg, rgba(15, 27, 42, 0.92), rgba(52, 149, 118, 0.52)),
+        url('/AWSSUG-branding.jpg') center / cover;
+}
+
+.rd-auth-brand-panel img {
+    width: min(520px, 86%);
+    max-height: 340px;
+    object-fit: cover;
+    border: 1px solid rgba(141, 224, 192, 0.5);
+    box-shadow: 0 0 0 8px rgba(15, 27, 42, 0.32);
+}
+
+.rd-auth-brand-panel p,
+.rd-auth-brand-panel span {
+    margin: 0;
+}
+
+.rd-auth-brand-panel p {
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-xl);
+    font-weight: 700;
+}
+
+.rd-auth-brand-panel span {
+    color: var(--rd-text-secondary);
+    font-size: var(--rd-text-sm);
 }
 
 .rd-auth-back {
@@ -58,7 +98,7 @@
 .rd-auth-back:hover {
     color: var(--rd-accent);
     border-color: var(--rd-accent-subtle);
-    background-color: rgba(255, 153, 0, 0.04);
+    background-color: var(--color-brand-subtle);
 }
 
 .rd-auth-back svg {
@@ -103,5 +143,15 @@
         border-left: none;
         border-top: 1px solid var(--rd-border);
         min-height: 240px;
+    }
+}
+
+@media (max-width: 640px) {
+    .rd-auth-col-left {
+        padding: var(--rd-space-4);
+    }
+
+    .rd-auth-form {
+        padding: var(--rd-space-5);
     }
 }

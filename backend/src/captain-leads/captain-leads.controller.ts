@@ -7,7 +7,6 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../../generated/prisma/client';
 
 @Controller('captain-leads')
-@UseGuards(JwtAuthGuard)
 export class CaptainLeadsController {
     constructor(private readonly captainLeadsService: CaptainLeadsService) { }
 
@@ -17,6 +16,7 @@ export class CaptainLeadsController {
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
     findOne(@Param('id') id: string) {
         return this.captainLeadsService.findOne(id);
     }

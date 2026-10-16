@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { apiRequest } from '../api/client';
 import type { FieldConfig, ApiResult } from '../types';
@@ -6,6 +6,8 @@ import ReferencePicker from './ReferencePicker';
 import { useTokens } from '../hooks/useTokens';
 import { useToast } from '../context/ToastContext';
 import { fetchReferenceList, invalidateReferenceCache } from '../api/referenceCache';
+import ModuleDashboard, { type DashboardModule } from './ModuleDashboard';
+import ModuleIntro from './ModuleIntro';
 import '../styles/ModuleForm.css';
 
 interface ModuleFormProps {
@@ -16,9 +18,10 @@ interface ModuleFormProps {
 	supportsDelete?: boolean;
 	createRoles?: string[]; // roles allowed to POST create; omit = public, anyone can create
 	manageRoles?: string[]; // roles allowed to GET all / PATCH / DELETE; omit = any authenticated user
+	dashboardModule?: DashboardModule;
 }
 
-type TabKey = 'dashboard' | 'create' | 'manage';
+type TabKey = 'dashboard' | 'table' | 'create' | 'manage';
 
 /*
  * DOCU: Converts a raw form value to what the API expects. Date/datetime
@@ -78,6 +81,28 @@ function formatCellValue(field: FieldConfig, value: unknown, resolvedLabel?: str
 	}
 	if (typeof value === 'object') return JSON.stringify(value);
 	return String(value);
+}
+
+function renderFieldLabel(label: string) {
+	const hintMatch = label.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+	if (!hintMatch) return label;
+
+	return (
+		<>
+			<span>{hintMatch[1].trim()}</span>
+			<span
+				className="rd-field-hint"
+				tabIndex={0}
+				title={hintMatch[2]}
+				aria-label={`Reminder: ${hintMatch[2]}`}
+			>
+				<span aria-hidden="true">i</span>
+				<span className="rd-field-hint-tooltip" role="tooltip">
+					{hintMatch[2]}
+				</span>
+			</span>
+		</>
+	);
 }
 
 /*
@@ -157,8 +182,9 @@ export default function ModuleForm({
 	supportsDelete = true,
 	createRoles,
 	manageRoles,
+	dashboardModule,
 }: ModuleFormProps) {
-	const { role, isAuthenticated } = useTokens();
+	const { role, isAuthenticated, isLoading: tokensLoading } = useTokens();
 	const toast = useToast();
 	const canCreate = !createRoles || (role !== null && createRoles.includes(role));
 	const canManage = !manageRoles || (role !== null && manageRoles.includes(role));
@@ -169,7 +195,10 @@ export default function ModuleForm({
 	// current tab is no longer permitted, fall back to a valid one.
 	useEffect(() => {
 		const stillValid =
-			(activeTab === 'dashboard' && canManage) || (activeTab === 'create' && canCreate) || (activeTab === 'manage' && canManage);
+			(activeTab === 'dashboard' && canManage) ||
+			(activeTab === 'table' && canManage) ||
+			(activeTab === 'create' && canCreate) ||
+			(activeTab === 'manage' && canManage);
 		if (!stillValid) {
 			setActiveTab(canManage ? 'dashboard' : canCreate ? 'create' : 'dashboard');
 		}
@@ -192,6 +221,7 @@ export default function ModuleForm({
 	const [records, setRecords] = useState<Record<string, any>[]>([]);
 	const [recordsLoading, setRecordsLoading] = useState(false);
 	const [recordsError, setRecordsError] = useState<string | null>(null);
+	const [searchQuery, setSearchQuery] = useState('');
 
 	const fetchRecords = useCallback(async () => {
 		setRecordsLoading(true);
@@ -216,6 +246,18 @@ export default function ModuleForm({
 
 	// —— Reference field labels (id -> display name), for table cells ——
 	const [refOptions, setRefOptions] = useState<Record<string, Record<string, string>>>({});
+
+	const filteredRecords = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		if (!query) return records;
+
+		return records.filter((record) =>
+			fields.some((field) => {
+				const resolvedLabel = field.type === 'reference' ? refOptions[field.name]?.[record[field.name]] : undefined;
+				return formatCellValue(field, record[field.name], resolvedLabel).toLowerCase().includes(query);
+			}),
+		);
+	}, [fields, records, refOptions, searchQuery]);
 
 	// Stable primitive key derived from field configs — used as the effect
 	// dependency instead of the `fields` array itself, since pages commonly
@@ -257,17 +299,19 @@ export default function ModuleForm({
 	}, [fieldsKey]);
 
 	useEffect(() => {
-		if (!canManage) return;
-		if (activeTab === 'dashboard' || activeTab === 'manage') {
+		if (tokensLoading || !canManage) return;
+		if (activeTab === 'dashboard' || activeTab === 'table' || activeTab === 'manage') {
 			fetchRecords();
 			fetchRefOptions();
 		}
-	}, [activeTab, canManage, fetchRecords, fetchRefOptions]);
+	}, [activeTab, canManage, fetchRecords, fetchRefOptions, tokensLoading]);
 
 	// —— Manage tab: edit / delete ——
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [editValues, setEditValues] = useState<Record<string, string>>({});
 	const [editFiles, setEditFiles] = useState<Record<string, File | null>>({});
+	const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+	const [deleteRecord, setDeleteRecord] = useState<Record<string, any> | null>(null);
 	const [manageLoading, setManageLoading] = useState(false);
 
 	function updateEditValue(name: string, val: string) {
@@ -284,6 +328,7 @@ export default function ModuleForm({
 		});
 		setEditValues(initial);
 		setEditFiles({});
+		setEditErrors({});
 		setEditingId(String(record.id));
 	}
 
@@ -291,6 +336,22 @@ export default function ModuleForm({
 		setEditingId(null);
 		setEditValues({});
 		setEditFiles({});
+		setEditErrors({});
+	}
+
+	function validateEditValues() {
+		const errors: Record<string, string> = {};
+		fields.forEach((field) => {
+			const value = editValues[field.name]?.trim() ?? '';
+			if (field.type === 'number' && value && !Number.isFinite(Number(value))) {
+				errors[field.name] = 'Enter a valid number.';
+			}
+			if ((field.type === 'date' || field.type === 'datetime') && value && Number.isNaN(new Date(value).getTime())) {
+				errors[field.name] = 'Enter a valid date.';
+			}
+		});
+		setEditErrors(errors);
+		return Object.keys(errors).length === 0;
 	}
 
 	async function handleCreate() {
@@ -332,7 +393,7 @@ export default function ModuleForm({
 	}
 
 	async function handleUpdate() {
-		if (!editingId) return;
+		if (!editingId || manageLoading || !validateEditValues()) return;
 		setManageLoading(true);
 		try {
 			let r: ApiResult;
@@ -369,15 +430,16 @@ export default function ModuleForm({
 		}
 	}
 
-	async function handleDeleteRecord(id: string) {
-		const confirmed = window.confirm(`Delete this ${title.replace(/s$/, '')} entry? This can't be undone.`);
-		if (!confirmed) return;
+	async function handleDeleteRecord(record: Record<string, any>) {
+		if (manageLoading) return;
+		const id = String(record.id);
 		setManageLoading(true);
 		try {
 			const r = await apiRequest('DELETE', `${endpoint}/${id}`);
 			if (r.status >= 200 && r.status < 300) {
 				toast.success('Deleted.');
 				if (editingId === id) cancelEdit();
+				setDeleteRecord(null);
 				invalidateReferenceCache(endpoint);
 				fetchRecords();
 			} else {
@@ -428,6 +490,17 @@ export default function ModuleForm({
 						Dashboard
 					</button>
 				)}
+				{canManage && (
+					<button
+						type="button"
+						role="tab"
+						aria-selected={activeTab === 'table'}
+						className={`rd-tab ${activeTab === 'table' ? 'rd-tab-active' : ''}`}
+						onClick={() => setActiveTab('table')}
+					>
+						Table
+					</button>
+				)}
 				{canCreate && (
 					<button
 						type="button"
@@ -455,39 +528,108 @@ export default function ModuleForm({
 			{activeTab === 'dashboard' && canManage && (
 				<div className="rd-tab-panel">
 					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
+					{recordsLoading ? (
+						<>
+							<ModuleIntro title={`${title} dashboard`} description={`View summaries and distributions for the current ${title.toLowerCase()} records.`} />
+							<p className="rd-moduleform-note">Loading dashboard data…</p>
+						</>
+					) : dashboardModule ? (
+						<ModuleDashboard module={dashboardModule} title={title} records={records} refOptions={refOptions} />
+					) : (
+						<>
+							<ModuleIntro title={`${title} dashboard`} description="Dashboard metrics are not configured for this module." />
+							<p className="rd-empty-state">No dashboard configuration is available for this module.</p>
+						</>
+					)}
+				</div>
+			)}
+
+			{activeTab === 'table' && canManage && (
+				<div className="rd-tab-panel">
+					<ModuleIntro
+						title={`${title} table`}
+						description={`Browse and search the current ${title.toLowerCase()} records.`}
+						count={`${filteredRecords.length} of ${records.length} records`}
+					/>
+					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
 					{recordsLoading && <p className="rd-moduleform-note">Loading…</p>}
 					{!recordsLoading &&
 						!recordsError &&
 						(records.length === 0 ? (
 							<p className="rd-empty-state">No {title.toLowerCase()} yet.</p>
 						) : (
-							<table className="rd-table">
-								<thead>
-									<tr>
+							<>
+								<div className="rd-table-toolbar">
+									<label className="rd-table-search">
+										<span>Search {title.toLowerCase()}</span>
+										<div className="rd-table-search-control">
+											<svg aria-hidden="true" viewBox="0 0 24 24">
+												<circle cx="11" cy="11" r="6.5" />
+												<path d="m16 16 4.5 4.5" />
+											</svg>
+											<input
+												type="search"
+												value={searchQuery}
+												onChange={(e) => setSearchQuery(e.target.value)}
+												placeholder="Search records"
+											/>
+										</div>
+									</label>
+								</div>
+								{filteredRecords.length === 0 ? (
+									<p className="rd-empty-state">No matching {title.toLowerCase()} found.</p>
+								) : (
+									<div className="rd-table-wrap">
+								<table className="rd-table">
+									<colgroup>
 										{fields.map((f) => (
-											<th key={f.name}>{f.label}</th>
+											<col key={f.name} className="rd-table-data-column" />
 										))}
+									</colgroup>
+									<thead>
+										<tr>
+											{fields.map((f) => (
+												<th key={f.name} className="rd-table-heading">
+													<div className="rd-table-heading-content">{renderFieldLabel(f.label)}</div>
+												</th>
+											))}
 									</tr>
 								</thead>
 								<tbody>
-									{records.map((r) => (
+									{filteredRecords.map((r) => (
 										<tr key={r.id}>
 											{fields.map((f) => (
-												<td key={f.name}>{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}</td>
+												<td key={f.name}>
+													<span
+														className="rd-table-cell-value"
+														title={formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
+															? undefined
+															: formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+													>
+														{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+													</span>
+												</td>
 											))}
 										</tr>
 									))}
 								</tbody>
-							</table>
+								</table>
+									</div>
+								)}
+							</>
 						))}
 				</div>
 			)}
 
 			{activeTab === 'create' && canCreate && (
 				<div className="rd-tab-panel">
+					<ModuleIntro
+						title={`Create ${title.replace(/s$/, '')}`}
+						description={`Add a new ${title.replace(/s$/, '').toLowerCase()} using the fields below.`}
+					/>
 					{fields.map((f) => (
 						<div className="rd-field" key={f.name}>
-							<label>{f.label}</label>
+							<label>{renderFieldLabel(f.label)}</label>
 							{renderFieldInput(f, values[f.name] ?? '', updateValue, updateFile)}
 						</div>
 					))}
@@ -501,25 +643,69 @@ export default function ModuleForm({
 
 			{activeTab === 'manage' && canManage && (
 				<div className="rd-tab-panel">
+					<ModuleIntro
+						title={`Manage ${title.toLowerCase()}`}
+						description={`Search, edit, or permanently delete ${title.toLowerCase()} records.`}
+						count={`${filteredRecords.length} of ${records.length} records`}
+					/>
 					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
 					{recordsLoading && <p className="rd-moduleform-note">Loading…</p>}
 					{!recordsLoading && !recordsError && records.length === 0 && <p className="rd-empty-state">No {title.toLowerCase()} yet.</p>}
 
 					{!recordsLoading && !recordsError && records.length > 0 && editingId === null && (
-						<table className="rd-table">
+						<>
+							<div className="rd-table-toolbar rd-manage-toolbar">
+								<label className="rd-table-search">
+									<span>Search {title.toLowerCase()}</span>
+									<div className="rd-table-search-control">
+										<svg aria-hidden="true" viewBox="0 0 24 24">
+											<circle cx="11" cy="11" r="6.5" />
+											<path d="m16 16 4.5 4.5" />
+										</svg>
+										<input
+											type="search"
+											value={searchQuery}
+											onChange={(e) => setSearchQuery(e.target.value)}
+											placeholder="Search records"
+										/>
+									</div>
+								</label>
+							</div>
+							{filteredRecords.length === 0 ? (
+								<p className="rd-empty-state">No matching {title.toLowerCase()} found.</p>
+							) : (
+								<div className="rd-table-wrap">
+							<table className="rd-table">
+							<colgroup>
+								{fields.map((f) => (
+									<col key={f.name} className="rd-table-data-column" />
+								))}
+								<col className="rd-table-actions-column" />
+							</colgroup>
 							<thead>
 								<tr>
 									{fields.map((f) => (
-										<th key={f.name}>{f.label}</th>
+										<th key={f.name} className="rd-table-heading">
+											<div className="rd-table-heading-content">{renderFieldLabel(f.label)}</div>
+										</th>
 									))}
-									<th>Actions</th>
+									<th className="rd-table-actions-heading">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
-								{records.map((r) => (
+								{filteredRecords.map((r) => (
 									<tr key={r.id}>
 										{fields.map((f) => (
-											<td key={f.name}>{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}</td>
+											<td key={f.name}>
+												<span
+													className="rd-table-cell-value"
+													title={formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
+														? undefined
+														: formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+												>
+													{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+												</span>
+											</td>
 										))}
 										<td>
 											<div className="rd-moduleform-row-actions">
@@ -529,7 +715,7 @@ export default function ModuleForm({
 												{supportsDelete && (
 													<button
 														className="rd-btn-ghost rd-btn-sm rd-btn-danger"
-														onClick={() => handleDeleteRecord(String(r.id))}
+														onClick={() => setDeleteRecord(r)}
 														disabled={manageLoading}
 													>
 														Delete
@@ -540,17 +726,37 @@ export default function ModuleForm({
 									</tr>
 								))}
 							</tbody>
-						</table>
+							</table>
+								</div>
+							)}
+						</>
 					)}
 
 					{editingId !== null && (
-						<div className="rd-moduleform-edit">
-							{fields.map((f) => (
-								<div className="rd-field" key={f.name}>
-									<label>{f.label}</label>
-									{renderFieldInput(f, editValues[f.name] ?? '', updateEditValue, updateEditFile)}
+						<div className="rd-modal-backdrop" role="presentation">
+							<div className="rd-moduleform-edit rd-modal" role="dialog" aria-modal="true" aria-labelledby="edit-record-title">
+								<div className="rd-modal-header">
+									<div>
+										<p className="rd-eyebrow">Editing record</p>
+										<h3 id="edit-record-title">Update {title.replace(/s$/, '')}</h3>
+										<p>Review the existing values below, make your changes, then save when ready.</p>
+									</div>
+									<button className="rd-modal-close" type="button" onClick={cancelEdit} disabled={manageLoading} aria-label="Close edit dialog">
+										×
+									</button>
 								</div>
-							))}
+								{Object.keys(editErrors).length > 0 && (
+									<div className="rd-error-banner" role="alert">Please correct the highlighted fields before saving.</div>
+								)}
+								<div className="rd-modal-fields">
+									{fields.map((f) => (
+										<div className="rd-field" key={f.name}>
+											<label>{renderFieldLabel(f.label)}</label>
+											{renderFieldInput(f, editValues[f.name] ?? '', updateEditValue, updateEditFile)}
+											{editErrors[f.name] && <span className="rd-field-error">{editErrors[f.name]}</span>}
+										</div>
+									))}
+								</div>
 							<div className="rd-form-actions">
 								<button className="rd-btn-ghost" onClick={cancelEdit} disabled={manageLoading}>
 									Cancel
@@ -559,8 +765,35 @@ export default function ModuleForm({
 									{manageLoading ? 'Saving…' : 'Save changes'}
 								</button>
 							</div>
+							</div>
 						</div>
 					)}
+				</div>
+			)}
+
+			{deleteRecord && (
+				<div className="rd-modal-backdrop" role="presentation">
+					<div className="rd-modal rd-delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-record-title">
+						<p className="rd-eyebrow rd-eyebrow-danger">Permanent action</p>
+						<h3 id="delete-record-title">Delete this {title.replace(/s$/, '')}?</h3>
+						<p>This action cannot be undone. The selected record will be permanently removed.</p>
+						<div className="rd-delete-preview">
+							{fields.slice(0, 2).map((field) => (
+								<div key={field.name}>
+									<span>{field.label}</span>
+									<strong>{formatCellValue(field, deleteRecord[field.name], field.type === 'reference' ? refOptions[field.name]?.[deleteRecord[field.name]] : undefined)}</strong>
+								</div>
+							))}
+						</div>
+						<div className="rd-form-actions">
+							<button className="rd-btn-ghost" type="button" onClick={() => setDeleteRecord(null)} disabled={manageLoading}>
+								Cancel
+							</button>
+							<button className="rd-btn-danger-solid" type="button" onClick={() => handleDeleteRecord(deleteRecord)} disabled={manageLoading}>
+								{manageLoading ? 'Deleting…' : 'Delete permanently'}
+							</button>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>
