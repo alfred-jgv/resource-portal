@@ -7,9 +7,9 @@ import type { FieldConfig } from '../types';
 const fields: FieldConfig[] = [
     { name: 'requesteeType', label: 'Requestee Type', type: 'select', options: ['CLUB', 'NON_CLUB'] },
     { name: 'fullName', label: 'Full Name', type: 'text' },
-    { name: 'clubId', label: 'Club (leave blank if NON_CLUB)', type: 'reference', refEndpoint: '/clubs', refLabelKeys: ['clubName'] },
+    { name: 'clubId', label: 'Club (leave blank if NON_CLUB)', type: 'reference', refEndpoint: '/clubs/public-options', refLabelKeys: ['clubName'] },
     { name: 'nonClubOrgName', label: 'Non-Club Org Name (leave blank if CLUB)', type: 'text' },
-    { name: 'eventId', label: 'Event', type: 'reference', refEndpoint: '/events', refLabelKeys: ['eventName'] },
+    { name: 'eventId', label: 'Event', type: 'reference', refEndpoint: '/events/public-options', refLabelKeys: ['eventName'] },
     { name: 'participantTier', label: 'Participant Tier', type: 'select', options: ['S', 'A', 'B', 'C'] },
     { name: 'requestedAmount', label: 'Requested Amount (PHP)', type: 'number' },
     { name: 'budgetBreakdown', label: 'Budget Breakdown (PDF)', type: 'file' },
@@ -18,5 +18,5 @@ const fields: FieldConfig[] = [
 ];
 
 export default function BudgetRequestsPage() {
-    return <ModuleForm title="Budget Requests" endpoint="/budget-requests" fields={fields} manageRoles={['ALLOCATION', 'ADMIN']} dashboardModule="budget-requests" />
+    return <ModuleForm title="Budget Requests" endpoint="/budget-requests" fields={fields} multipart manageRoles={['ALLOCATION', 'ADMIN']} dashboardModule="budget-requests" />
 }

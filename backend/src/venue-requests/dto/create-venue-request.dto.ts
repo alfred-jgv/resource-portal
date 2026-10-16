@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsDateString, IsEnum, IsInt, IsUUID, Min } from 'class-validator';
 import { Floor } from '../../../generated/prisma/client';
 
@@ -30,6 +31,7 @@ export class CreateVenueRequestDto {
     @IsEnum(Floor)
     floor!: Floor;
 
+    @Transform(({ value }) => (typeof value === 'string' ? Number(value.trim()) : value))
     @IsInt()
     @Min(1)
     numberOfPax!: number;

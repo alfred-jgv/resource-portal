@@ -11,8 +11,14 @@ export class ClubsController {
     constructor(private readonly clubsService: ClubsService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
     findAll() {
         return this.clubsService.findAll();
+    }
+
+    @Get('public-options')
+    findPublicOptions() {
+        return this.clubsService.findPublicOptions();
     }
 
     @Get(':id')

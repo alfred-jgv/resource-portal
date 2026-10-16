@@ -34,6 +34,13 @@ export class EventsService {
         return this.prisma.event.findMany({ orderBy: { createdAt: 'desc' } });
     }
 
+    findPublicOptions() {
+        return this.prisma.event.findMany({
+            select: { id: true, eventName: true },
+            orderBy: { startDate: 'asc' },
+        });
+    }
+
     /**
      * DOCU: Finds a single event by id.
      *

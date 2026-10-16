@@ -17,6 +17,7 @@ const LINKS: SidebarLink[] = [
     { to: '/budget-requests', label: 'Budget Requests', roles: ['ALLOCATION', 'ADMIN'] },
     { to: '/venue-requests', label: 'Venue Requests', roles: ['WORKFORCE', 'ADMIN'] },
     { to: '/events', label: 'Events', roles: ['WORKFORCE', 'ADMIN'] },
+    { to: '/admin/register', label: 'Officers', roles: ['ADMIN'] },
 ];
 
 /*
@@ -30,13 +31,14 @@ const LINKS: SidebarLink[] = [
  * Last Updated By: Alfred
  */
 export default function Sidebar() {
-    const { role } = useTokens();
+    const { name, role } = useTokens();
     const visibleLinks = LINKS.filter((l) => !l.roles || (role !== null && l.roles.includes(role)));
 
     return (
         <aside className="rd-sidebar">
             <div className="rd-sidebar-header">
                 <img className="rd-sidebar-logo" src="/AWSSUG-logo.jpg" alt="AWS Student User Group Philippines" />
+                <p className="rd-sidebar-name">{name ?? 'Resource Officer'}</p>
                 <p className="rd-sidebar-role">Role: {role ?? 'unknown'}</p>
             </div>
 

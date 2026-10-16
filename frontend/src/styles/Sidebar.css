@@ -65,6 +65,13 @@
     margin: 0;
 }
 
+.rd-sidebar-name {
+    margin: 0 0 var(--rd-space-1);
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-sm);
+    font-weight: 600;
+}
+
 .rd-sidebar-nav {
     display: flex;
     flex-direction: column;
@@ -95,6 +102,9 @@
 }
 
 .rd-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rd-space-2);
     margin-top: auto;
     padding-top: var(--rd-space-6);
     border-top: 1px solid var(--rd-border);

@@ -75,6 +75,38 @@
     background: var(--rd-surface);
 }
 
+.rd-table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rd-space-3);
+    margin-top: var(--rd-space-3);
+    color: var(--rd-text-secondary);
+    font-size: var(--rd-text-xs);
+}
+
+.rd-table-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--rd-space-2);
+}
+
+.rd-table-pagination-actions > span {
+    min-width: 6.5rem;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .rd-table-pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .rd-table-pagination-actions {
+        justify-content: space-between;
+    }
+}
+
 .rd-tab-intro strong {
     flex: 0 0 auto;
     color: var(--rd-text-primary);

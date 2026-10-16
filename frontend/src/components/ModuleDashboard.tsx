@@ -12,6 +12,15 @@ interface ModuleDashboardProps {
 
 const COLORS = ['#349576', '#8DE0C0', '#F2C96D', '#5FBE9A', '#2B7D63', '#AAB7B8'];
 
+function humanizeLabel(value: string) {
+	if (!value.includes('_')) return value;
+	return value
+		.toLowerCase()
+		.split('_')
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' ');
+}
+
 function countBy(records: Record<string, any>[], getKey: (record: Record<string, any>) => string) {
 	const counts = new Map<string, number>();
 	records.forEach((record) => {
@@ -55,7 +64,7 @@ function DistributionChart({ data, label, formatter }: { data: { name: string; v
 			<div className="rd-dashboard-bars" aria-label={label}>
 				{chartData.map((entry, index) => (
 					<div className="rd-dashboard-bar-row" key={entry.name}>
-						<div className="rd-dashboard-bar-label" title={entry.name}>{entry.name}</div>
+						<div className="rd-dashboard-bar-label" title={humanizeLabel(entry.name)}>{humanizeLabel(entry.name)}</div>
 						<div className="rd-dashboard-bar-track">
 							<div className="rd-dashboard-bar-fill" style={{ width: `${(entry.value / maximum) * 100}%`, backgroundColor: COLORS[index % COLORS.length] }} />
 						</div>
@@ -85,7 +94,7 @@ function PieDistribution({ data, label }: { data: { name: string; value: number 
 							return stops;
 						}, { parts: [] as string[], offset: 0 }).parts.join(', ')})`,
 					}}
-					aria-label={`${label}: ${data.map((entry) => `${entry.name} ${entry.value}`).join(', ')}`}
+					aria-label={`${label}: ${data.map((entry) => `${humanizeLabel(entry.name)} ${entry.value}`).join(', ')}`}
 				>
 					<span>{total}</span>
 				</div>
@@ -93,7 +102,7 @@ function PieDistribution({ data, label }: { data: { name: string; value: number 
 					{data.slice(0, 8).map((entry, index) => (
 						<div key={entry.name}>
 							<span className="rd-dashboard-legend-swatch" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-							<span title={entry.name}>{entry.name}</span>
+							<span title={humanizeLabel(entry.name)}>{humanizeLabel(entry.name)}</span>
 							<strong>{entry.value}</strong>
 						</div>
 					))}

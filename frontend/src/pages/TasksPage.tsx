@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { apiRequest } from '../api/client';
 import { useTokens } from '../hooks/useTokens';
 import '../styles/TasksPage.css';
@@ -17,6 +17,7 @@ interface Task {
 
 const OFFICES = ['INFORMATION', 'ALLOCATION', 'WORKFORCE', 'ADMIN'];
 const STATUSES: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'DONE'];
+const TASK_PAGE_SIZE = 15;
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
     PENDING: 'Pending',
@@ -53,6 +54,14 @@ function toDateInputValue(iso: string) {
     return iso ? iso.slice(0, 10) : '';
 }
 
+function formatOffice(office: string) {
+    return office.charAt(0) + office.slice(1).toLowerCase();
+}
+
+function normalizeOffice(office: string) {
+    return office.trim().toUpperCase();
+}
+
 /*
  * DOCU: Task dashboard — lists tasks from GET /tasks as an expandable
  * card list (status-colored left edge, deadline always visible in the
@@ -73,6 +82,9 @@ export default function TasksPage() {
     const [form, setForm] = useState(EMPTY_FORM);
     const [editForm, setEditForm] = useState(EMPTY_FORM);
     const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [officeFilter, setOfficeFilter] = useState('');
+    const [taskPage, setTaskPage] = useState(1);
     const { role } = useTokens();
 
     async function loadTasks() {
@@ -86,6 +98,40 @@ export default function TasksPage() {
     useEffect(() => {
         loadTasks();
     }, []);
+
+    const filteredTasks = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+
+        return tasks.filter((task) => {
+            const matchesOffice = !officeFilter || normalizeOffice(task.assignedOffice) === officeFilter;
+            if (!matchesOffice) return false;
+            if (!query) return true;
+
+            return [
+                task.taskName,
+                task.taskDetails,
+                formatOffice(task.assignedOffice),
+                task.status,
+            ]
+                .join(' ')
+                .toLowerCase()
+                .includes(query);
+        });
+    }, [officeFilter, searchQuery, tasks]);
+
+    const totalTaskPages = Math.max(1, Math.ceil(filteredTasks.length / TASK_PAGE_SIZE));
+    const paginatedTasks = useMemo(() => {
+        const start = (taskPage - 1) * TASK_PAGE_SIZE;
+        return filteredTasks.slice(start, start + TASK_PAGE_SIZE);
+    }, [filteredTasks, taskPage]);
+
+    useEffect(() => {
+        setTaskPage(1);
+    }, [officeFilter, searchQuery]);
+
+    useEffect(() => {
+        if (taskPage > totalTaskPages) setTaskPage(totalTaskPages);
+    }, [taskPage, totalTaskPages]);
 
     function toggleExpanded(id: string) {
         setExpandedIds((prev) => {
@@ -209,8 +255,42 @@ export default function TasksPage() {
             ) : tasks.length === 0 ? (
                 <p className="rd-empty-state">No tasks.</p>
             ) : (
-                <ul className="rd-task-list">
-                    {tasks.map((t) => {
+                <>
+                    <div className="rd-task-toolbar" role="search">
+                        <label className="rd-task-search">
+                            <span>Search tasks</span>
+                            <div className="rd-task-search-control">
+                                <svg aria-hidden="true" viewBox="0 0 24 24">
+                                    <circle cx="11" cy="11" r="6.5" />
+                                    <path d="m16 16 4.5 4.5" />
+                                </svg>
+                                <input
+                                    type="search"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search task name or details"
+                                />
+                            </div>
+                        </label>
+                        <label className="rd-task-filter">
+                            <span>Department</span>
+                            <select value={officeFilter} onChange={(e) => setOfficeFilter(e.target.value)}>
+                                <option value="">All departments</option>
+                                {OFFICES.map((office) => (
+                                    <option key={office} value={office}>{formatOffice(office)}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <span className="rd-task-count">
+                            Showing {filteredTasks.length} of {tasks.length} tasks
+                        </span>
+                    </div>
+
+                    {filteredTasks.length === 0 ? (
+                        <p className="rd-empty-state">No tasks match the current search and department filter.</p>
+                    ) : (
+                        <ul className="rd-task-list">
+                    {paginatedTasks.map((t) => {
                         const isOpen = expandedIds.has(t.id);
                         const isEditing = editingId === t.id;
                         const overdue = isOverdue(t.deadline, t.status);
@@ -357,7 +437,26 @@ export default function TasksPage() {
                             </li>
                         );
                     })}
-                </ul>
+                        </ul>
+                    )}
+
+                    {filteredTasks.length > TASK_PAGE_SIZE && (
+                        <nav className="rd-task-pagination" aria-label="Task pages">
+                            <span>
+                                Showing {(taskPage - 1) * TASK_PAGE_SIZE + 1}–{Math.min(taskPage * TASK_PAGE_SIZE, filteredTasks.length)} of {filteredTasks.length}
+                            </span>
+                            <div className="rd-task-pagination-actions">
+                                <button type="button" className="rd-btn-ghost rd-btn-sm" onClick={() => setTaskPage((page) => Math.max(1, page - 1))} disabled={taskPage === 1}>
+                                    Previous
+                                </button>
+                                <span aria-current="page">Page {taskPage} of {totalTaskPages}</span>
+                                <button type="button" className="rd-btn-ghost rd-btn-sm" onClick={() => setTaskPage((page) => Math.min(totalTaskPages, page + 1))} disabled={taskPage === totalTaskPages}>
+                                    Next
+                                </button>
+                            </div>
+                        </nav>
+                    )}
+                </>
             )}
         </div>
     );

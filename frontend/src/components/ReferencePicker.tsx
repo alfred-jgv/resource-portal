@@ -7,6 +7,9 @@ interface ReferencePickerProps {
 	labelKeys: string[];
 	value: string;
 	onChange: (id: string) => void;
+	filterKey?: string;
+	filterValue?: string;
+	autoSelectFirst?: boolean;
 }
 
 /*
@@ -23,10 +26,12 @@ interface ReferencePickerProps {
  * Author: Alfred
  * Last Updated By: Alfred
  */
-export default function ReferencePicker({ endpoint, labelKeys, value, onChange }: ReferencePickerProps) {
+export default function ReferencePicker({ endpoint, labelKeys, value, onChange, filterKey, filterValue, autoSelectFirst = false }: ReferencePickerProps) {
 	const [options, setOptions] = useState<{ id: string; label: string }[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
+	const [retryToken, setRetryToken] = useState(0);
+	const [loadedFilterValue, setLoadedFilterValue] = useState<string | undefined>(undefined);
 
 	const labelKeysKey = labelKeys.join('|');
 
@@ -36,12 +41,17 @@ export default function ReferencePicker({ endpoint, labelKeys, value, onChange }
 		async function loadOptions() {
 			setLoading(true);
 			setError('');
+			setOptions([]);
+			setLoadedFilterValue(undefined);
 			try {
 				const res = await fetchReferenceList(endpoint);
 				if (cancelled) return;
-				if (Array.isArray(res.data)) {
+				if (res.status >= 200 && res.status < 300 && Array.isArray(res.data)) {
+					const filteredData = filterKey && filterValue
+						? res.data.filter((item: any) => String(item[filterKey]) === filterValue)
+						: [];
 					setOptions(
-						res.data.map((item: any) => ({
+						(filterKey ? filteredData : res.data).map((item: any) => ({
 							id: item.id,
 							label: labelKeysKey
 								.split('|')
@@ -50,8 +60,14 @@ export default function ReferencePicker({ endpoint, labelKeys, value, onChange }
 								.join(' — ') || item.id,
 						})),
 					);
+					setLoadedFilterValue(filterValue);
 				} else {
-					setError(`Couldn't load options (status ${res.status}).`);
+					setOptions([]);
+					setError(
+						res.status === 401 || res.status === 403
+							? 'These options are unavailable right now. Please try again.'
+							: `Couldn’t load options (status ${res.status}).`,
+					);
 				}
 			} catch {
 				if (!cancelled) setError("Couldn't load options. Check your connection.");
@@ -64,23 +80,47 @@ export default function ReferencePicker({ endpoint, labelKeys, value, onChange }
 		return () => {
 			cancelled = true;
 		};
-	}, [endpoint, labelKeysKey]);
+	}, [endpoint, labelKeysKey, filterKey, filterValue, retryToken]);
 
 	const selectValue = options.some((o) => o.id === value) ? value : '';
+	const selectedOption = options.find((option) => option.id === selectValue);
+
+	useEffect(() => {
+		if (autoSelectFirst && filterValue && loadedFilterValue === filterValue && !value && !loading && options.length > 0) {
+			onChange(options[0].id);
+		}
+	}, [autoSelectFirst, filterValue, loadedFilterValue, loading, onChange, options, value]);
 
 	return (
 		<div className="rd-refpicker">
-			<select value={selectValue} disabled={loading} onChange={(e) => onChange(e.target.value)}>
-				<option value="">
-					{loading ? 'Loading…' : options.length === 0 ? 'No records found — create one first' : `select an option (${options.length})`}
-				</option>
-				{options.map((o) => (
-					<option key={o.id} value={o.id}>
-						{o.label}
+			{autoSelectFirst ? (
+				<div className="rd-refpicker-readonly" aria-live="polite">
+					{loading ? 'Loading club head…' : error ? 'Club head unavailable' : selectedOption?.label ?? (filterValue ? 'No club head available' : 'Select a club first')}
+				</div>
+			) : (
+				<select
+					value={selectValue}
+					disabled={loading || (!!filterKey && !filterValue)}
+					onChange={(e) => onChange(e.target.value)}
+				>
+					<option value="">
+						{loading ? 'Loading…' : error ? 'Options unavailable' : filterKey && !filterValue ? 'Select a club first' : options.length === 0 ? 'No records available' : `Select an option (${options.length})`}
 					</option>
-				))}
-			</select>
-			{error && <p className="rd-refpicker-error">{error}</p>}
+					{options.map((o) => (
+						<option key={o.id} value={o.id}>
+							{o.label}
+						</option>
+					))}
+				</select>
+			)}
+			{error && (
+				<div className="rd-refpicker-error">
+					<p>{error}</p>
+					<button type="button" onClick={() => setRetryToken((value) => value + 1)} disabled={loading}>
+						Retry
+					</button>
+				</div>
+			)}
 		</div>
 	);
 }

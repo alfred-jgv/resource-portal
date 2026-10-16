@@ -5,6 +5,7 @@ export const TOKEN_KEY = 'rdms_token';
 
 export interface TokenContextValue {
     token: string | null;
+    name: string | null;
     role: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -19,12 +20,12 @@ export const TokenContext = createContext<TokenContextValue | null>(null);
  * signature verification needed here, the backend already validates
  * the token on every request; this is purely for UI gating.
  */
-function decodeRole(token: string): string | null {
+function decodeUser(token: string): { name: string | null; role: string | null } {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.role ?? null;
+        return { name: payload.name ?? null, role: payload.role ?? null };
     } catch {
-        return null;
+        return { name: null, role: null };
     }
 }
 
@@ -47,6 +48,7 @@ function isExpired(token: string): boolean {
 
 export function TokenProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
+    const [name, setName] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -59,7 +61,24 @@ export function TokenProvider({ children }: { children: ReactNode }) {
                 localStorage.removeItem(TOKEN_KEY);
             } else {
                 setToken(stored);
-                setRole(decodeRole(stored));
+                const user = decodeUser(stored);
+                setName(user.name);
+                setRole(user.role);
+                fetch(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api'}/auth/me`, {
+                    headers: { Authorization: `Bearer ${stored}` },
+                })
+                    .then(async (response) => {
+                        if (!response.ok) return null;
+                        return response.json();
+                    })
+                    .then((profile: { name?: string | null; role?: string | null } | null) => {
+                        if (!profile) return;
+                        setName(profile.name ?? null);
+                        setRole(profile.role ?? user.role);
+                    })
+                    .catch((error) => {
+                        console.error('Unable to refresh the authenticated officer profile.', error);
+                    });
             }
         }
         setIsLoading(false);
@@ -68,12 +87,15 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     const login = useCallback((t: string) => {
         localStorage.setItem(TOKEN_KEY, t);
         setToken(t);
-        setRole(decodeRole(t));
+        const user = decodeUser(t);
+        setName(user.name);
+        setRole(user.role);
     }, []);
 
     const logout = useCallback(() => {
         localStorage.removeItem(TOKEN_KEY);
         setToken(null);
+        setName(null);
         setRole(null);
     }, []);
 
@@ -83,7 +105,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     }, [logout]);
 
     return (
-        <TokenContext.Provider value={{ token, role, isAuthenticated: !!token, isLoading, login, logout }}>
+        <TokenContext.Provider value={{ token, name, role, isAuthenticated: !!token, isLoading, login, logout }}>
             {children}
         </TokenContext.Provider>
     );

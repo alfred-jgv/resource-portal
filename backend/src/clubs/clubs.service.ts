@@ -31,6 +31,13 @@ export class ClubsService {
         return this.prisma.club.findMany({ orderBy: { createdAt: 'desc' } });
     }
 
+    findPublicOptions() {
+        return this.prisma.club.findMany({
+            select: { id: true, clubName: true },
+            orderBy: { clubName: 'asc' },
+        });
+    }
+
     /** 
      * DOCU: Finds a single club by id.
      * @param {string} id - Club id

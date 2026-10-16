@@ -31,6 +31,13 @@ export class CaptainLeadsService {
         return this.prisma.captainLead.findMany({ orderBy: { createdAt: 'desc' } });
     }
 
+    findPublicOptions() {
+        return this.prisma.captainLead.findMany({
+            select: { id: true, firstName: true, lastName: true, clubId: true },
+            orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        });
+    }
+
     /**
      * DOCU: Finds a single captain lead by id.
      *

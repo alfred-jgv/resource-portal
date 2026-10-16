@@ -12,6 +12,7 @@ import ClubsPage from './pages/ClubsPage';
 import CaptainLeadsPage from './pages/CaptainLeadsPage';
 import DepartmentExecutivesPage from './pages/DepartmentExecutivesPage';
 import TasksPage from './pages/TasksPage';
+import RegisterOfficerPage from './pages/RegisterOfficerPage';
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
                     { path: '/department-executives', element: <DepartmentExecutivesPage /> },
                     { path: '/tasks', element: <TasksPage /> },
                     { path: '/events', element: <EventsPage /> },
+                    { path: '/admin/register', element: <RegisterOfficerPage /> },
                 ],
             },
         ],

@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateOfficerDto } from './dto/update-officer.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,10 @@ export class AuthService {
 	async register(dto: RegisterDto) {
 		const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
 		if (existing) throw new ConflictException('Email already in use');
+		if (dto.role === 'ADMIN') {
+			const adminCount = await this.prisma.user.count({ where: { role: 'ADMIN' } });
+			if (adminCount > 0) throw new ConflictException('Only one Admin account is allowed');
+		}
 
 		const hashed = await bcrypt.hash(dto.password, 10);
 		const user = await this.prisma.user.create({
@@ -37,7 +42,52 @@ export class AuthService {
 			},
 		});
 
-		return this.buildToken(user.id, user.email, user.role);
+		return this.buildToken(user.id, user.email, user.role, user.name);
+	}
+
+	async findOfficers() {
+		return this.prisma.user.findMany({
+			select: { id: true, email: true, name: true, role: true, createdAt: true },
+			orderBy: { createdAt: 'desc' },
+		});
+	}
+
+	async updateOfficer(id: string, dto: UpdateOfficerDto) {
+		const existing = await this.prisma.user.findUnique({ where: { id } });
+		if (!existing) throw new NotFoundException('Officer not found');
+		if (dto.role === 'ADMIN' && existing.role !== 'ADMIN') {
+			const adminCount = await this.prisma.user.count({ where: { role: 'ADMIN' } });
+			if (adminCount > 0) throw new ConflictException('Only one Admin account is allowed');
+		}
+
+		if (dto.email && dto.email !== existing.email) {
+			const emailInUse = await this.prisma.user.findUnique({ where: { email: dto.email } });
+			if (emailInUse) throw new ConflictException('Email already in use');
+		}
+
+		const data: { email?: string; name?: string; role?: UpdateOfficerDto['role']; password?: string } = {
+			email: dto.email,
+			name: dto.name,
+			role: dto.role,
+		};
+		if (dto.password) data.password = await bcrypt.hash(dto.password, 10);
+
+		return this.prisma.user.update({
+			where: { id },
+			data,
+			select: { id: true, email: true, name: true, role: true, createdAt: true },
+		});
+	}
+
+	async removeOfficer(id: string, requestingUserId: string) {
+		if (id === requestingUserId) throw new ConflictException('You cannot delete your own account');
+		const existing = await this.prisma.user.findUnique({ where: { id } });
+		if (!existing) throw new NotFoundException('Officer not found');
+		if (existing.role === 'ADMIN') throw new ConflictException('The Admin account cannot be deleted');
+		return this.prisma.user.delete({
+			where: { id },
+			select: { id: true, email: true, name: true, role: true, createdAt: true },
+		});
 	}
 
 	/**
@@ -58,7 +108,7 @@ export class AuthService {
 		const valid = await bcrypt.compare(dto.password, user.password);
 		if (!valid) throw new UnauthorizedException('Invalid credentials');
 
-		return this.buildToken(user.id, user.email, user.role);
+		return this.buildToken(user.id, user.email, user.role, user.name);
 	}
 
 	/**
@@ -72,7 +122,7 @@ export class AuthService {
 	 * Author: Alfred
 	 * Last Updated By: Alfred
 	 */
-	private buildToken(sub: string, email: string, role: string) {
-		return { access_token: this.jwt.sign({ sub, email, role }) };
+	private buildToken(sub: string, email: string, role: string, name?: string | null) {
+		return { access_token: this.jwt.sign({ sub, email, role, name: name ?? undefined }) };
 	}
 }

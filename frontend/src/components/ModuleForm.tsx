@@ -22,6 +22,15 @@ interface ModuleFormProps {
 }
 
 type TabKey = 'dashboard' | 'table' | 'create' | 'manage';
+const TABLE_PAGE_SIZE = 25;
+
+function humanizeOptionLabel(value: string): string {
+	return value
+		.toLowerCase()
+		.split('_')
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' ');
+}
 
 /*
  * DOCU: Converts a raw form value to what the API expects. Date/datetime
@@ -34,7 +43,10 @@ type TabKey = 'dashboard' | 'table' | 'create' | 'manage';
  * Author: Alfred
  * Last Updated By: Alfred
  */
-function toApiValue(field: FieldConfig, raw: string): string {
+function toApiValue(field: FieldConfig, raw: string, formValues: Record<string, string> = {}): string {
+	if (field.type === 'time' && raw && formValues.reservationDate) {
+		return new Date(`${formValues.reservationDate}T${raw}`).toISOString();
+	}
 	if ((field.type === 'date' || field.type === 'datetime') && raw) {
 		return new Date(raw).toISOString();
 	}
@@ -52,11 +64,15 @@ function toApiValue(field: FieldConfig, raw: string): string {
  */
 function fromApiValue(field: FieldConfig, value: unknown): string {
 	if (value === null || value === undefined) return '';
-	if ((field.type === 'date' || field.type === 'datetime') && value) {
+	if ((field.type === 'date' || field.type === 'datetime' || field.type === 'time') && value) {
 		const d = new Date(value as string);
 		if (isNaN(d.getTime())) return '';
 		const iso = d.toISOString();
-		return field.type === 'date' ? iso.slice(0, 10) : iso.slice(0, 16);
+		if (field.type === 'date') return iso.slice(0, 10);
+		if (field.type === 'time') {
+			return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+		}
+		return iso.slice(0, 16);
 	}
 	if (field.type === 'file') return '';
 	return String(value);
@@ -79,8 +95,35 @@ function formatCellValue(field: FieldConfig, value: unknown, resolvedLabel?: str
 		if (isNaN(d.getTime())) return String(value);
 		return field.type === 'date' ? d.toLocaleDateString() : d.toLocaleString();
 	}
+	if (field.type === 'time') {
+		const d = new Date(value as string);
+		if (isNaN(d.getTime())) return String(value);
+		return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+	}
+	if (field.type === 'select' && typeof value === 'string') return humanizeOptionLabel(value);
 	if (typeof value === 'object') return JSON.stringify(value);
 	return String(value);
+}
+
+function getRecordFieldValue(field: FieldConfig, record: Record<string, any>): unknown {
+	if (field.type === 'file') return record[field.name] ?? record[`${field.name}Url`];
+	return record[field.name];
+}
+
+function renderRecordValue(field: FieldConfig, record: Record<string, any>, resolvedLabel?: string) {
+	const value = getRecordFieldValue(field, record);
+	if (field.type === 'file' && typeof value === 'string' && value) {
+		return (
+			<a className="rd-table-file-link" href={value} target="_blank" rel="noreferrer">
+				View document
+			</a>
+		);
+	}
+	return formatCellValue(field, value, resolvedLabel);
+}
+
+function getRecordDisplayValue(field: FieldConfig, record: Record<string, any>, resolvedLabel?: string): string {
+	return formatCellValue(field, getRecordFieldValue(field, record), resolvedLabel);
 }
 
 function renderFieldLabel(label: string) {
@@ -105,6 +148,17 @@ function renderFieldLabel(label: string) {
 	);
 }
 
+function getApiErrorMessage(data: unknown, fallback: string): string {
+	if (typeof data === 'object' && data !== null && 'message' in data) {
+		const message = (data as { message?: unknown }).message;
+		if (typeof message === 'string' && message.trim()) return message;
+		if (Array.isArray(message) && message.every((item) => typeof item === 'string')) {
+			return message.join(' ');
+		}
+	}
+	return fallback;
+}
+
 /*
  * DOCU: Shared input renderer for both the Create form and the inline
  * Edit form — same field types, different state buckets passed in.
@@ -116,6 +170,7 @@ function renderFieldLabel(label: string) {
 function renderFieldInput(
 	f: FieldConfig,
 	currentValue: string,
+	formValues: Record<string, string>,
 	onChange: (name: string, val: string) => void,
 	onFileChange: (name: string, file: File | null) => void,
 ) {
@@ -123,10 +178,10 @@ function renderFieldInput(
 		case 'select':
 			return (
 				<select value={currentValue} onChange={(e) => onChange(f.name, e.target.value)}>
-					<option value="">select an option</option>
+					<option value="">Select an option</option>
 					{f.options!.map((o) => (
 						<option key={o} value={o}>
-							{o}
+							{humanizeOptionLabel(o)}
 						</option>
 					))}
 				</select>
@@ -140,12 +195,17 @@ function renderFieldInput(
 					labelKeys={f.refLabelKeys ?? ['id']}
 					value={currentValue}
 					onChange={(id) => onChange(f.name, id)}
+					filterKey={f.refFilterKey}
+					filterValue={f.refFilterField ? formValues[f.refFilterField] : undefined}
+					autoSelectFirst={f.autoSelectFirst}
 				/>
 			);
 		case 'date':
 			return <input type="date" value={currentValue} onChange={(e) => onChange(f.name, e.target.value)} />;
 		case 'datetime':
 			return <input type="datetime-local" value={currentValue} onChange={(e) => onChange(f.name, e.target.value)} />;
+		case 'time':
+			return <input type="time" value={currentValue} onChange={(e) => onChange(f.name, e.target.value)} />;
 		default:
 			return (
 				<input
@@ -211,7 +271,13 @@ export default function ModuleForm({
 	const [createLoading, setCreateLoading] = useState(false);
 
 	function updateValue(name: string, val: string) {
-		setValues((v) => ({ ...v, [name]: val }));
+		setValues((v) => {
+			const next = { ...v, [name]: val };
+			fields.forEach((field) => {
+				if (field.refFilterField === name) next[field.name] = '';
+			});
+			return next;
+		});
 	}
 	function updateFile(name: string, file: File | null) {
 		setFiles((v) => ({ ...v, [name]: file }));
@@ -222,6 +288,7 @@ export default function ModuleForm({
 	const [recordsLoading, setRecordsLoading] = useState(false);
 	const [recordsError, setRecordsError] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState('');
+	const [tablePage, setTablePage] = useState(1);
 
 	const fetchRecords = useCallback(async () => {
 		setRecordsLoading(true);
@@ -258,6 +325,41 @@ export default function ModuleForm({
 			}),
 		);
 	}, [fields, records, refOptions, searchQuery]);
+
+	const totalTablePages = Math.max(1, Math.ceil(filteredRecords.length / TABLE_PAGE_SIZE));
+	const paginatedRecords = useMemo(() => {
+		const start = (tablePage - 1) * TABLE_PAGE_SIZE;
+		return filteredRecords.slice(start, start + TABLE_PAGE_SIZE);
+	}, [filteredRecords, tablePage]);
+
+	useEffect(() => {
+		setTablePage(1);
+	}, [searchQuery]);
+
+	useEffect(() => {
+		if (tablePage > totalTablePages) setTablePage(totalTablePages);
+	}, [tablePage, totalTablePages]);
+
+	function renderTablePagination() {
+		if (filteredRecords.length <= TABLE_PAGE_SIZE) return null;
+
+		return (
+			<nav className="rd-table-pagination" aria-label={`${title} table pages`}>
+				<span>
+					Showing {(tablePage - 1) * TABLE_PAGE_SIZE + 1}–{Math.min(tablePage * TABLE_PAGE_SIZE, filteredRecords.length)} of {filteredRecords.length}
+				</span>
+				<div className="rd-table-pagination-actions">
+					<button type="button" className="rd-btn-ghost rd-btn-sm" onClick={() => setTablePage((page) => Math.max(1, page - 1))} disabled={tablePage === 1}>
+						Previous
+					</button>
+					<span aria-current="page">Page {tablePage} of {totalTablePages}</span>
+					<button type="button" className="rd-btn-ghost rd-btn-sm" onClick={() => setTablePage((page) => Math.min(totalTablePages, page + 1))} disabled={tablePage === totalTablePages}>
+						Next
+					</button>
+				</div>
+			</nav>
+		);
+	}
 
 	// Stable primitive key derived from field configs — used as the effect
 	// dependency instead of the `fields` array itself, since pages commonly
@@ -315,7 +417,13 @@ export default function ModuleForm({
 	const [manageLoading, setManageLoading] = useState(false);
 
 	function updateEditValue(name: string, val: string) {
-		setEditValues((v) => ({ ...v, [name]: val }));
+		setEditValues((v) => {
+			const next = { ...v, [name]: val };
+			fields.forEach((field) => {
+				if (field.refFilterField === name) next[field.name] = '';
+			});
+			return next;
+		});
 	}
 	function updateEditFile(name: string, file: File | null) {
 		setEditFiles((v) => ({ ...v, [name]: file }));
@@ -349,12 +457,41 @@ export default function ModuleForm({
 			if ((field.type === 'date' || field.type === 'datetime') && value && Number.isNaN(new Date(value).getTime())) {
 				errors[field.name] = 'Enter a valid date.';
 			}
+			if (field.type === 'time' && value && !/^\d{2}:\d{2}$/.test(value)) {
+				errors[field.name] = 'Enter a valid time.';
+			}
 		});
 		setEditErrors(errors);
 		return Object.keys(errors).length === 0;
 	}
 
+	function validateCreateValues() {
+		const referenceFields = fields.filter((field) => field.type === 'reference');
+		for (const field of referenceFields) {
+			if (!values[field.name]?.trim()) {
+				toast.error(`${field.label.replace(/\s*\([^)]*\)\s*$/, '')} must be selected.`);
+				return false;
+			}
+		}
+		const numberFields = fields.filter((field) => field.type === 'number');
+		for (const field of numberFields) {
+			const raw = values[field.name]?.trim() ?? '';
+			const numericValue = Number(raw);
+			if (!raw || !Number.isInteger(numericValue) || numericValue < 1) {
+				toast.error(`${field.label.replace(/\s*\([^)]*\)\s*$/, '')} must be a whole number of at least 1.`);
+				return false;
+			}
+		}
+		const automaticReference = fields.find((field) => field.autoSelectFirst && !values[field.name]);
+		if (automaticReference) {
+			toast.error(`${automaticReference.label} is unavailable for the selected record. Choose another option or contact an administrator.`);
+			return false;
+		}
+		return true;
+	}
+
 	async function handleCreate() {
+		if (createLoading || !validateCreateValues()) return;
 		setCreateLoading(true);
 		try {
 			let r: ApiResult;
@@ -364,7 +501,8 @@ export default function ModuleForm({
 					if (f.type === 'file') {
 						if (files[f.name]) fd.append(f.name, files[f.name] as File);
 					} else {
-						fd.append(f.name, toApiValue(f, values[f.name] ?? ''));
+						const raw = values[f.name] ?? '';
+						if (raw !== '') fd.append(f.name, toApiValue(f, raw, values));
 					}
 				});
 				r = await apiRequest('POST', endpoint, fd, true);
@@ -372,7 +510,7 @@ export default function ModuleForm({
 				const body: Record<string, any> = {};
 				fields.forEach((f) => {
 					const raw = values[f.name] ?? '';
-					body[f.name] = f.type === 'number' ? Number(raw || 0) : toApiValue(f, raw);
+					body[f.name] = f.type === 'number' ? Number(raw || 0) : toApiValue(f, raw, values);
 				});
 				r = await apiRequest('POST', endpoint, body, false);
 			}
@@ -383,7 +521,7 @@ export default function ModuleForm({
 				invalidateReferenceCache(endpoint);
 				if (canManage) fetchRecords();
 			} else {
-				toast.error(`Couldn't create ${title.toLowerCase()} (status ${r.status}).`);
+				toast.error(getApiErrorMessage(r.data, `Couldn't create ${title.toLowerCase()} (status ${r.status}).`));
 			}
 		} catch {
 			toast.error(`Couldn't create ${title.toLowerCase()}. Check your connection and try again.`);
@@ -403,7 +541,7 @@ export default function ModuleForm({
 					if (f.type === 'file') {
 						if (editFiles[f.name]) fd.append(f.name, editFiles[f.name] as File);
 					} else {
-						fd.append(f.name, toApiValue(f, editValues[f.name] ?? ''));
+						fd.append(f.name, toApiValue(f, editValues[f.name] ?? '', editValues));
 					}
 				});
 				r = await apiRequest('PATCH', `${endpoint}/${editingId}`, fd, true);
@@ -411,7 +549,7 @@ export default function ModuleForm({
 				const body: Record<string, any> = {};
 				fields.forEach((f) => {
 					const raw = editValues[f.name] ?? '';
-					body[f.name] = f.type === 'number' ? Number(raw || 0) : toApiValue(f, raw);
+					body[f.name] = f.type === 'number' ? Number(raw || 0) : toApiValue(f, raw, editValues);
 				});
 				r = await apiRequest('PATCH', `${endpoint}/${editingId}`, body, false);
 			}
@@ -596,17 +734,17 @@ export default function ModuleForm({
 									</tr>
 								</thead>
 								<tbody>
-									{filteredRecords.map((r) => (
+									{paginatedRecords.map((r) => (
 										<tr key={r.id}>
 											{fields.map((f) => (
 												<td key={f.name}>
 													<span
 														className="rd-table-cell-value"
-														title={formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
+														title={getRecordDisplayValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
 															? undefined
-															: formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+															: getRecordDisplayValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
 													>
-														{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+															{renderRecordValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
 													</span>
 												</td>
 											))}
@@ -616,6 +754,7 @@ export default function ModuleForm({
 								</table>
 									</div>
 								)}
+								{renderTablePagination()}
 							</>
 						))}
 				</div>
@@ -630,7 +769,7 @@ export default function ModuleForm({
 					{fields.map((f) => (
 						<div className="rd-field" key={f.name}>
 							<label>{renderFieldLabel(f.label)}</label>
-							{renderFieldInput(f, values[f.name] ?? '', updateValue, updateFile)}
+							{renderFieldInput(f, values[f.name] ?? '', values, updateValue, updateFile)}
 						</div>
 					))}
 					<div className="rd-form-actions">
@@ -693,17 +832,17 @@ export default function ModuleForm({
 								</tr>
 							</thead>
 							<tbody>
-								{filteredRecords.map((r) => (
+								{paginatedRecords.map((r) => (
 									<tr key={r.id}>
 										{fields.map((f) => (
 											<td key={f.name}>
 												<span
 													className="rd-table-cell-value"
-													title={formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
+												title={getRecordDisplayValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined) === '—'
 														? undefined
-														: formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+													: getRecordDisplayValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
 												>
-													{formatCellValue(f, r[f.name], f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
+													{renderRecordValue(f, r, f.type === 'reference' ? refOptions[f.name]?.[r[f.name]] : undefined)}
 												</span>
 											</td>
 										))}
@@ -729,6 +868,7 @@ export default function ModuleForm({
 							</table>
 								</div>
 							)}
+							{renderTablePagination()}
 						</>
 					)}
 
@@ -752,7 +892,7 @@ export default function ModuleForm({
 									{fields.map((f) => (
 										<div className="rd-field" key={f.name}>
 											<label>{renderFieldLabel(f.label)}</label>
-											{renderFieldInput(f, editValues[f.name] ?? '', updateEditValue, updateEditFile)}
+											{renderFieldInput(f, editValues[f.name] ?? '', editValues, updateEditValue, updateEditFile)}
 											{editErrors[f.name] && <span className="rd-field-error">{editErrors[f.name]}</span>}
 										</div>
 									))}

@@ -11,8 +11,14 @@ export class CaptainLeadsController {
     constructor(private readonly captainLeadsService: CaptainLeadsService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
     findAll() {
         return this.captainLeadsService.findAll();
+    }
+
+    @Get('public-options')
+    findPublicOptions() {
+        return this.captainLeadsService.findPublicOptions();
     }
 
     @Get(':id')

@@ -11,8 +11,14 @@ export class EventsController {
     constructor(private readonly eventsService: EventsService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
     findAll() {
         return this.eventsService.findAll();
+    }
+
+    @Get('public-options')
+    findPublicOptions() {
+        return this.eventsService.findPublicOptions();
     }
 
     @Get(':id')

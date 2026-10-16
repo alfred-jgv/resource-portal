@@ -15,11 +15,14 @@ export interface AuthUser {
 export interface FieldConfig {
     name: string;
     label: string;
-    type: 'text' | 'number' | 'select' | 'file' | 'date' | 'datetime' | 'reference';
+    type: 'text' | 'number' | 'select' | 'file' | 'date' | 'time' | 'datetime' | 'reference';
     options?: string[];
     placeholder?: string;
     refEndpoint?: string;     // e.g. '/clubs' — only used when type is 'reference'
     refLabelKeys?: string[];  // which fields to show in the picker, e.g. ['clubName', 'universityName']
+    refFilterField?: string;  // form field whose value filters this reference
+    refFilterKey?: string;    // option property matched against refFilterField
+    autoSelectFirst?: boolean; // automatically select the first filtered option
 }
 
 export interface SavedToken {
