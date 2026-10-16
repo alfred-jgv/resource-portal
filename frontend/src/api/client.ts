@@ -1,7 +1,7 @@
 import type { ApiResult } from '../types';
 import { TOKEN_KEY } from '../context/TokenContext';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
 /*
  * DOCU: Fetch wrapper used by every module page. Auto-attaches the

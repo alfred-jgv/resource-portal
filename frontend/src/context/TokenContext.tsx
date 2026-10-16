@@ -64,7 +64,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
                 const user = decodeUser(stored);
                 setName(user.name);
                 setRole(user.role);
-                fetch(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api'}/auth/me`, {
+                fetch(`${import.meta.env.VITE_API_BASE_URL ?? '/api'}/auth/me`, {
                     headers: { Authorization: `Bearer ${stored}` },
                 })
                     .then(async (response) => {
