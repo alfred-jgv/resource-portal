@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { TokenProvider } from './context/TokenContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import RootLayout from './components/RootLayout';
@@ -14,7 +14,7 @@ import DepartmentExecutivesPage from './pages/DepartmentExecutivesPage';
 import TasksPage from './pages/TasksPage';
 import RegisterOfficerPage from './pages/RegisterOfficerPage';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         element: <RootLayout />,
         children: [
