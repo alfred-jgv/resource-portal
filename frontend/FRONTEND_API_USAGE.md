@@ -8,6 +8,13 @@ This is a practical guide for integrating the frontend with the current backend.
 
 Base URL
 - http://localhost:3000/api
+- Configure it as `VITE_API_BASE_URL` in `frontend/.env` for local development.
+
+For a separate Vercel deployment, set `VITE_API_BASE_URL` in the frontend
+project's environment variables to the deployed backend URL, including
+`/api` (for example, `https://your-backend.vercel.app/api`). Vite embeds this
+value at build time, so redeploy the frontend after changing it. Also set the
+backend's `CORS_ORIGIN` to the deployed frontend URL.
 
 Auth header for protected routes
 - Authorization: Bearer <access_token>

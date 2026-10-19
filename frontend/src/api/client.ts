@@ -1,7 +1,6 @@
 import type { ApiResult } from '../types';
 import { TOKEN_KEY } from '../context/TokenContext';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
+import { API_BASE_URL } from './config';
 
 /*
  * DOCU: Fetch wrapper used by every module page. Auto-attaches the
@@ -43,7 +42,7 @@ export async function apiRequest(
         }
     }
 
-    const res = await fetch(`${BASE_URL}${path}`, { method, headers, body: fetchBody });
+    const res = await fetch(`${API_BASE_URL}${path}`, { method, headers, body: fetchBody });
 
     if (res.status === 401 && activeToken) {
         window.dispatchEvent(new Event('auth:logout'));

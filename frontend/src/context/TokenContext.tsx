@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { API_BASE_URL } from '../api/config';
 
 export const TOKEN_KEY = 'rdms_token';
 
@@ -64,7 +65,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
                 const user = decodeUser(stored);
                 setName(user.name);
                 setRole(user.role);
-                fetch(`${import.meta.env.VITE_API_BASE_URL ?? '/api'}/auth/me`, {
+                fetch(`${API_BASE_URL}/auth/me`, {
                     headers: { Authorization: `Bearer ${stored}` },
                 })
                     .then(async (response) => {
