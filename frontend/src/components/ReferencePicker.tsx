@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchReferenceList } from '../api/referenceCache';
+import { Skeleton } from './Skeletons';
 import '../styles/ReferencePicker.css';
 
 interface ReferencePickerProps {
@@ -95,23 +96,29 @@ export default function ReferencePicker({ endpoint, labelKeys, value, onChange, 
 		<div className="rd-refpicker">
 			{autoSelectFirst ? (
 				<div className="rd-refpicker-readonly" aria-live="polite">
-					{loading ? 'Loading club head…' : error ? 'Club head unavailable' : selectedOption?.label ?? (filterValue ? 'No club head available' : 'Select a club first')}
+					{loading ? <Skeleton className="rd-skeleton-ref-value" /> : error ? 'Club head unavailable' : selectedOption?.label ?? (filterValue ? 'No club head available' : 'Select a club first')}
 				</div>
 			) : (
-				<select
-					value={selectValue}
-					disabled={loading || (!!filterKey && !filterValue)}
-					onChange={(e) => onChange(e.target.value)}
-				>
-					<option value="">
-						{loading ? 'Loading…' : error ? 'Options unavailable' : filterKey && !filterValue ? 'Select a club first' : options.length === 0 ? 'No records available' : `Select an option (${options.length})`}
-					</option>
-					{options.map((o) => (
-						<option key={o.id} value={o.id}>
-							{o.label}
+				loading ? (
+					<div className="rd-refpicker-select-skeleton" aria-hidden="true">
+						<Skeleton className="rd-skeleton-ref-value" />
+					</div>
+				) : (
+					<select
+						value={selectValue}
+						disabled={!!filterKey && !filterValue}
+						onChange={(e) => onChange(e.target.value)}
+					>
+						<option value="">
+							{error ? 'Options unavailable' : filterKey && !filterValue ? 'Select a club first' : options.length === 0 ? 'No records available' : `Select an option (${options.length})`}
 						</option>
-					))}
-				</select>
+						{options.map((o) => (
+							<option key={o.id} value={o.id}>
+								{o.label}
+							</option>
+						))}
+					</select>
+				)
 			)}
 			{error && (
 				<div className="rd-refpicker-error">

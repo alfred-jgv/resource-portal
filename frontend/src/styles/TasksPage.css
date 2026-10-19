@@ -331,21 +331,61 @@
 }
 
 .rd-task-status--pending {
-    background-color: var(--color-surface-muted);
-    color: var(--rd-text-tertiary);
-    border-color: var(--rd-border);
+    background-color: #273746;
+    color: #D6E0E5;
+    border-color: #607686;
 }
 
 .rd-task-status--in-progress {
-    background-color: rgba(52, 149, 118, 0.14);
-    color: var(--color-brand-focus);
-    border-color: rgba(95, 190, 154, 0.5);
+    background-color: #12382F;
+    color: #A8E8CF;
+    border-color: #5FBE9A;
 }
 
 .rd-task-status--done {
-    background-color: var(--rd-success-bg);
-    color: var(--rd-success);
-    border-color: var(--rd-success-border);
+    background-color: #193C35;
+    color: #9DE3B3;
+    border-color: #55A878;
+}
+
+.rd-task-status-select {
+    color-scheme: dark;
+}
+
+.rd-task-status-select option {
+    background-color: var(--rd-surface);
+    color: var(--rd-text-primary);
+}
+
+.rd-task-card--skeleton {
+    border-left-color: var(--color-brand);
+}
+
+.rd-skeleton-task-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--rd-space-2);
+}
+
+.rd-skeleton-task-meta {
+    width: 28%;
+    height: 12px;
+}
+
+.rd-skeleton-task-title {
+    width: 58%;
+    height: 20px;
+}
+
+.rd-skeleton-status {
+    width: 96px;
+    height: 27px;
+}
+
+.rd-skeleton-chevron {
+    width: 16px;
+    height: 16px;
 }
 
 .rd-task-chevron {

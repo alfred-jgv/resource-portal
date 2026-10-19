@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTokens } from '../hooks/useTokens';
 import { apiRequest } from '../api/client';
 import '../styles/AuthPage.css';
+import { Skeleton } from '../components/Skeletons';
 
 export default function AuthPage() {
     const { login } = useTokens();
@@ -60,8 +61,8 @@ export default function AuthPage() {
                         {error && <div className="rd-error-banner">{error}</div>}
 
                         <div className="rd-form-actions">
-                            <button className="rd-btn" type="submit" disabled={loading}>
-                                {loading ? 'Please wait…' : 'Login'}
+                            <button className="rd-btn" type="submit" disabled={loading} aria-busy={loading} aria-label={loading ? 'Signing in' : undefined}>
+                                {loading ? <Skeleton className="rd-skeleton-button" /> : 'Login'}
                             </button>
                         </div>
                     </form>

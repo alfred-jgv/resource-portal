@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { useTokens } from '../hooks/useTokens';
 import Sidebar from './Sidebar';
+import { AppShellSkeleton } from './Skeletons';
 import '../styles/RootLayout.css';
 
 /*
@@ -16,7 +17,7 @@ import '../styles/RootLayout.css';
 export default function RootLayout() {
     const { isAuthenticated, isLoading } = useTokens();
 
-    if (isLoading) return null;
+    if (isLoading) return <AppShellSkeleton />;
 
     if (!isAuthenticated) {
         return (
