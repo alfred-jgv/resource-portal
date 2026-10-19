@@ -29,6 +29,22 @@
     font-size: var(--rd-text-sm);
 }
 
+.rd-refpicker-select-skeleton {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 42px;
+    padding: var(--rd-space-2) var(--rd-space-3);
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    background-color: var(--rd-surface);
+}
+
+.rd-skeleton-ref-value {
+    width: 45%;
+    height: 14px;
+}
+
 .rd-refpicker-error {
     display: flex;
     align-items: center;

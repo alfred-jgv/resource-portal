@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { apiRequest } from '../api/client';
 import { useTokens } from '../hooks/useTokens';
+import { TaskListSkeleton } from '../components/Skeletons';
 import '../styles/TasksPage.css';
 
 type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE';
@@ -251,7 +252,7 @@ export default function TasksPage() {
             )}
 
             {loading ? (
-                <p className="rd-empty-state">Loading…</p>
+                <TaskListSkeleton />
             ) : tasks.length === 0 ? (
                 <p className="rd-empty-state">No tasks.</p>
             ) : (

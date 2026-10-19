@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { fetchReferenceList, invalidateReferenceCache } from '../api/referenceCache';
 import ModuleDashboard, { type DashboardModule } from './ModuleDashboard';
 import ModuleIntro from './ModuleIntro';
+import { DashboardSkeleton, Skeleton, TableSkeleton } from './Skeletons';
 import '../styles/ModuleForm.css';
 
 interface ModuleFormProps {
@@ -667,10 +668,7 @@ export default function ModuleForm({
 				<div className="rd-tab-panel">
 					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
 					{recordsLoading ? (
-						<>
-							<ModuleIntro title={`${title} dashboard`} description={`View summaries and distributions for the current ${title.toLowerCase()} records.`} />
-							<p className="rd-moduleform-note">Loading dashboard data…</p>
-						</>
+						<DashboardSkeleton />
 					) : dashboardModule ? (
 						<ModuleDashboard module={dashboardModule} title={title} records={records} refOptions={refOptions} />
 					) : (
@@ -690,7 +688,7 @@ export default function ModuleForm({
 						count={`${filteredRecords.length} of ${records.length} records`}
 					/>
 					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
-					{recordsLoading && <p className="rd-moduleform-note">Loading…</p>}
+					{recordsLoading && <TableSkeleton columns={fields.length} />}
 					{!recordsLoading &&
 						!recordsError &&
 						(records.length === 0 ? (
@@ -773,8 +771,8 @@ export default function ModuleForm({
 						</div>
 					))}
 					<div className="rd-form-actions">
-						<button className="rd-btn" onClick={handleCreate} disabled={createLoading}>
-							{createLoading ? 'Submitting…' : 'Submit'}
+						<button className="rd-btn" onClick={handleCreate} disabled={createLoading} aria-busy={createLoading} aria-label={createLoading ? 'Submitting' : undefined}>
+							{createLoading ? <Skeleton className="rd-skeleton-button" /> : 'Submit'}
 						</button>
 					</div>
 				</div>
@@ -788,7 +786,7 @@ export default function ModuleForm({
 						count={`${filteredRecords.length} of ${records.length} records`}
 					/>
 					{recordsError && <div className="rd-error-banner">{recordsError}</div>}
-					{recordsLoading && <p className="rd-moduleform-note">Loading…</p>}
+					{recordsLoading && <TableSkeleton columns={fields.length + 1} />}
 					{!recordsLoading && !recordsError && records.length === 0 && <p className="rd-empty-state">No {title.toLowerCase()} yet.</p>}
 
 					{!recordsLoading && !recordsError && records.length > 0 && editingId === null && (
@@ -901,8 +899,8 @@ export default function ModuleForm({
 								<button className="rd-btn-ghost" onClick={cancelEdit} disabled={manageLoading}>
 									Cancel
 								</button>
-								<button className="rd-btn" onClick={handleUpdate} disabled={manageLoading}>
-									{manageLoading ? 'Saving…' : 'Save changes'}
+								<button className="rd-btn" onClick={handleUpdate} disabled={manageLoading} aria-busy={manageLoading} aria-label={manageLoading ? 'Saving changes' : undefined}>
+									{manageLoading ? <Skeleton className="rd-skeleton-button" /> : 'Save changes'}
 								</button>
 							</div>
 							</div>
@@ -929,8 +927,8 @@ export default function ModuleForm({
 							<button className="rd-btn-ghost" type="button" onClick={() => setDeleteRecord(null)} disabled={manageLoading}>
 								Cancel
 							</button>
-							<button className="rd-btn-danger-solid" type="button" onClick={() => handleDeleteRecord(deleteRecord)} disabled={manageLoading}>
-								{manageLoading ? 'Deleting…' : 'Delete permanently'}
+							<button className="rd-btn-danger-solid" type="button" onClick={() => handleDeleteRecord(deleteRecord)} disabled={manageLoading} aria-busy={manageLoading} aria-label={manageLoading ? 'Deleting permanently' : undefined}>
+								{manageLoading ? <Skeleton className="rd-skeleton-button" /> : 'Delete permanently'}
 							</button>
 						</div>
 					</div>

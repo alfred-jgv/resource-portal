@@ -52,6 +52,8 @@
     --rd-success: var(--color-success);
     --rd-success-bg: #193C35;
     --rd-success-border: #2F735D;
+    --rd-skeleton-base: #20394A;
+    --rd-skeleton-highlight: #2C4B5D;
 
     /* ── Fonts ── */
     --rd-font-heading: 'Open Sans', 'Helvetica Neue', Roboto, Arial, sans-serif;
