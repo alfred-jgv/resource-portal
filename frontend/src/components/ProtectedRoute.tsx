@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTokens } from '../hooks/useTokens';
+import { AppShellSkeleton } from './Skeletons';
 
 /*
  * DOCU: Layout route guarding /captain-leads, /clubs,
@@ -16,7 +17,7 @@ export default function ProtectedRoute() {
     const { isAuthenticated, isLoading } = useTokens();
     const location = useLocation();
 
-    if (isLoading) return null;
+    if (isLoading) return <AppShellSkeleton />;
     if (!isAuthenticated) return <Navigate to="/login" replace state={{ from: location }} />;
 
     return <Outlet />;

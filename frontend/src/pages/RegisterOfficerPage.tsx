@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { apiRequest } from '../api/client';
 import { useTokens } from '../hooks/useTokens';
 import '../styles/RegisterOfficerPage.css';
+import { Skeleton, TableSkeleton } from '../components/Skeletons';
 
 const ROLES = ['INFORMATION', 'ALLOCATION', 'WORKFORCE', 'ADMIN'];
 
@@ -155,7 +156,7 @@ export default function RegisterOfficerPage() {
                     {message && <div className="rd-register-success" role="status">{message}</div>}
                     <div className="rd-form-actions">
                         {editingId && <button type="button" className="rd-btn-ghost" onClick={resetForm}>Cancel</button>}
-                        <button className="rd-btn" type="submit" disabled={saving}>{saving ? 'Saving…' : editingId ? 'Save changes' : 'Register officer'}</button>
+                        <button className="rd-btn" type="submit" disabled={saving} aria-busy={saving} aria-label={saving ? 'Saving officer' : undefined}>{saving ? <Skeleton className="rd-skeleton-button" /> : editingId ? 'Save changes' : 'Register officer'}</button>
                     </div>
                 </form>
             )}
@@ -167,7 +168,7 @@ export default function RegisterOfficerPage() {
                 </div>
                 {error && <div className="rd-error-banner" role="alert">{error}</div>}
                 {message && <div className="rd-register-success" role="status">{message}</div>}
-                {loading ? <p className="rd-empty-state">Loading officers…</p> : officers.length === 0 ? <p className="rd-empty-state">No officers registered.</p> : (
+                {loading ? <TableSkeleton columns={4} /> : officers.length === 0 ? <p className="rd-empty-state">No officers registered.</p> : (
                     <div className="rd-table-wrap">
                         <table className="rd-table">
                             <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
