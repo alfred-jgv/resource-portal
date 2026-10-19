@@ -129,6 +129,22 @@
     width: 100%;
 }
 
+.rd-button-spinner {
+    width: 15px;
+    height: 15px;
+    margin-right: var(--rd-space-2);
+    border: 2px solid rgba(22, 25, 31, 0.35);
+    border-top-color: #16191F;
+    border-radius: 50%;
+    animation: rd-spin 700ms linear infinite;
+}
+
+@keyframes rd-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @media (max-width: 900px) {
     .rd-auth-page {
         flex-direction: column;

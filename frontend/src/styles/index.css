@@ -3,7 +3,7 @@
    index.css | Colors, Fonts, Spacing Only
    ========================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 :root {
     /* ── AWS-inspired AWSSUG PH dark theme ── */
@@ -56,8 +56,8 @@
     --rd-skeleton-highlight: #2C4B5D;
 
     /* ── Fonts ── */
-    --rd-font-heading: 'Open Sans', 'Helvetica Neue', Roboto, Arial, sans-serif;
-    --rd-font-body: 'Open Sans', 'Helvetica Neue', Roboto, Arial, sans-serif;
+    --rd-font-heading: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    --rd-font-body: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
     --rd-font-mono: 'IBM Plex Mono', monospace;
 
     /* ── Type Scale ── */
