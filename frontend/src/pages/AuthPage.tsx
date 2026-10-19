@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { useTokens } from '../hooks/useTokens';
 import { apiRequest } from '../api/client';
 import '../styles/AuthPage.css';
-import { Skeleton } from '../components/Skeletons';
 
 export default function AuthPage() {
     const { login } = useTokens();
@@ -37,9 +37,7 @@ export default function AuthPage() {
         <div className="rd-auth-page">
             <div className="rd-auth-col rd-auth-col-left">
                 <Link to="/" className="rd-login rd-auth-back">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
+                    <ArrowLeft size={14} aria-hidden="true" />
                     Back to home
                 </Link>
 
@@ -62,7 +60,12 @@ export default function AuthPage() {
 
                         <div className="rd-form-actions">
                             <button className="rd-btn" type="submit" disabled={loading} aria-busy={loading} aria-label={loading ? 'Signing in' : undefined}>
-                                {loading ? <Skeleton className="rd-skeleton-button" /> : 'Login'}
+                                {loading ? (
+                                    <>
+                                        <span className="rd-button-spinner" aria-hidden="true" />
+                                        Signing in...
+                                    </>
+                                ) : 'Login'}
                             </button>
                         </div>
                     </form>
@@ -72,7 +75,7 @@ export default function AuthPage() {
             <div className="rd-auth-col rd-auth-col-right">
                 <div className="rd-auth-brand-panel">
                     <img src="/AWSSUG-branding.jpg" alt="AWS Student User Group Philippines branding" />
-                    <span>Welcome!!!!!!!! :3</span>
+                    <span>This is a test environment :3</span>
                 </div>
             </div>
         </div>

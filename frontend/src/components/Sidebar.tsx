@@ -1,4 +1,17 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import {
+    Building2,
+    CalendarDays,
+    ClipboardList,
+    Coins,
+    ContactRound,
+    FileText,
+    PanelLeftClose,
+    PanelLeftOpen,
+    UsersRound,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTokens } from '../hooks/useTokens';
 import LogoutButton from './LogoutButton';
 import '../styles/Sidebar.css';
@@ -6,18 +19,19 @@ import '../styles/Sidebar.css';
 interface SidebarLink {
     to: string;
     label: string;
+    icon: LucideIcon;
     roles?: string[]; // omit = visible to all authenticated roles
 }
 
 const LINKS: SidebarLink[] = [
-    { to: '/tasks', label: 'Tasks' },
-    { to: '/clubs', label: 'Clubs', roles: ['INFORMATION', 'ADMIN'] },
-    { to: '/captain-leads', label: 'Captain & Leads', roles: ['INFORMATION', 'ADMIN'] },
-    { to: '/department-executives', label: 'Department Executives', roles: ['WORKFORCE', 'ADMIN'] },
-    { to: '/budget-requests', label: 'Budget Requests', roles: ['ALLOCATION', 'ADMIN'] },
-    { to: '/venue-requests', label: 'Venue Requests', roles: ['WORKFORCE', 'ADMIN'] },
-    { to: '/events', label: 'Events', roles: ['WORKFORCE', 'ADMIN'] },
-    { to: '/admin/register', label: 'Officers', roles: ['ADMIN'] },
+    { to: '/tasks', label: 'Tasks', icon: ClipboardList },
+    { to: '/clubs', label: 'Clubs', icon: Building2, roles: ['INFORMATION', 'ADMIN'] },
+    { to: '/captain-leads', label: 'Captain & Leads', icon: ContactRound, roles: ['INFORMATION', 'ADMIN'] },
+    { to: '/department-executives', label: 'Department Executives', icon: UsersRound, roles: ['WORKFORCE', 'ADMIN'] },
+    { to: '/budget-requests', label: 'Budget Requests', icon: Coins, roles: ['ALLOCATION', 'ADMIN'] },
+    { to: '/venue-requests', label: 'Venue Requests', icon: FileText, roles: ['WORKFORCE', 'ADMIN'] },
+    { to: '/events', label: 'Events', icon: CalendarDays, roles: ['WORKFORCE', 'ADMIN'] },
+    { to: '/admin/register', label: 'Officers', icon: UsersRound, roles: ['ADMIN'] },
 ];
 
 /*
@@ -32,14 +46,36 @@ const LINKS: SidebarLink[] = [
  */
 export default function Sidebar() {
     const { name, role } = useTokens();
+    const [collapsed, setCollapsed] = useState(() => localStorage.getItem('rd_sidebar_collapsed') === 'true');
     const visibleLinks = LINKS.filter((l) => !l.roles || (role !== null && l.roles.includes(role)));
 
+    function toggleCollapsed() {
+        setCollapsed((value) => {
+            const nextValue = !value;
+            localStorage.setItem('rd_sidebar_collapsed', String(nextValue));
+            return nextValue;
+        });
+    }
+
     return (
-        <aside className="rd-sidebar">
+        <aside className={`rd-sidebar${collapsed ? ' rd-sidebar--collapsed' : ''}`}>
             <div className="rd-sidebar-header">
-                <img className="rd-sidebar-logo" src="/AWSSUG-logo.jpg" alt="AWS Student User Group Philippines" />
-                <p className="rd-sidebar-name">{name ?? 'Resource Officer'}</p>
-                <p className="rd-sidebar-role">Role: {role ?? 'unknown'}</p>
+                <div className="rd-sidebar-brand-row">
+                    <img className="rd-sidebar-logo" src="/AWSSUG-logo.jpg" alt="AWS Student User Group Philippines" />
+                    <div className="rd-sidebar-brand-copy">
+                        <strong>AWSSUG PH</strong>
+                        <span>Resource Portal</span>
+                    </div>
+                    <button className="rd-sidebar-toggle" type="button" onClick={toggleCollapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+                        {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+                    </button>
+                </div>
+                <div className="rd-sidebar-user">
+                    <p className="rd-sidebar-name">
+                        {name ?? 'Resource Officer'}
+                        <span className="rd-sidebar-role"> · {role ?? 'unknown'}</span>
+                    </p>
+                </div>
             </div>
 
             <nav className="rd-sidebar-nav">
@@ -51,7 +87,8 @@ export default function Sidebar() {
                             isActive ? 'rd-sidebar-link rd-sidebar-link--active' : 'rd-sidebar-link'
                         }
                     >
-                        {l.label}
+                        <l.icon size={18} strokeWidth={1.8} aria-hidden="true" />
+                        <span className="rd-sidebar-link-label">{l.label}</span>
                     </NavLink>
                 ))}
             </nav>

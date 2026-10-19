@@ -15,25 +15,95 @@
     border-right: 1px solid var(--rd-border);
     padding: var(--rd-space-6) var(--rd-space-5);
     box-sizing: border-box;
+    transition: width var(--rd-transition), padding var(--rd-transition);
+}
+
+.rd-sidebar--collapsed {
+    width: 76px;
+    padding-right: var(--rd-space-3);
+    padding-left: var(--rd-space-3);
 }
 
 .rd-sidebar-header {
-    margin-bottom: var(--rd-space-8);
-    padding-bottom: var(--rd-space-5);
+    margin-bottom: var(--rd-space-7);
+    padding: var(--rd-space-1) var(--rd-space-1) var(--rd-space-5);
     border-bottom: 1px solid var(--rd-border);
-    text-align: center;
+}
+
+.rd-sidebar-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rd-space-3);
+    min-height: 44px;
 }
 
 .rd-sidebar-logo {
     display: block;
-    width: 48px;
-    height: 48px;
-    margin-bottom: var(--rd-space-4);
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
     object-fit: cover;
     border: 1px solid var(--rd-border);
     border-radius: 50%;
-    margin-left: auto;
-    margin-right: auto;
+}
+
+.rd-sidebar-brand-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.rd-sidebar-brand-copy strong {
+    color: var(--rd-text-primary);
+    font-family: var(--rd-font-heading);
+    font-size: var(--rd-text-lg);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.rd-sidebar-brand-copy strong::before {
+    display: none;
+}
+
+.rd-sidebar-brand-copy span {
+    margin-top: 5px;
+    color: var(--rd-text-primary);
+    font-size: var(--rd-text-xs);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+}
+
+.rd-sidebar-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    color: var(--rd-text-secondary);
+    background: transparent;
+    border: 1px solid var(--rd-border);
+    border-radius: var(--rd-radius);
+    cursor: pointer;
+}
+
+.rd-sidebar-toggle:hover {
+    color: var(--rd-text-primary);
+    background: var(--rd-nav-hover);
+}
+
+.rd-sidebar-user {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-top: var(--rd-space-4);
+    padding-left: 0;
+    line-height: 1.2;
 }
 
 .rd-sidebar-title {
@@ -58,18 +128,21 @@
 
 .rd-sidebar-role {
     font-family: var(--rd-font-mono);
-    font-size: var(--rd-text-xs);
+    font-size: 0.625rem;
+    font-weight: 400;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--rd-text-tertiary);
-    margin: 0;
 }
 
 .rd-sidebar-name {
-    margin: 0 0 var(--rd-space-1);
+    margin: 0;
+    overflow: hidden;
     color: var(--rd-text-primary);
     font-size: var(--rd-text-sm);
     font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .rd-sidebar-nav {
@@ -79,7 +152,9 @@
 }
 
 .rd-sidebar-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: var(--rd-space-3);
     font-family: var(--rd-font-body);
     font-size: var(--rd-text-sm);
     font-weight: 500;
@@ -88,6 +163,51 @@
     padding: var(--rd-space-2) var(--rd-space-3);
     border-radius: var(--rd-radius);
     transition: background-color var(--rd-transition), color var(--rd-transition);
+}
+
+.rd-sidebar-link svg {
+    flex-shrink: 0;
+}
+
+.rd-sidebar-link-label {
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity var(--rd-transition);
+}
+
+.rd-sidebar--collapsed .rd-sidebar-header {
+    margin-bottom: var(--rd-space-5);
+    padding: 0 0 var(--rd-space-3);
+}
+
+.rd-sidebar--collapsed .rd-sidebar-brand-row {
+    justify-content: center;
+}
+
+.rd-sidebar--collapsed .rd-sidebar-brand-copy {
+    display: none;
+}
+
+.rd-sidebar--collapsed .rd-sidebar-brand-row {
+    flex-direction: column;
+    gap: 0;
+}
+
+.rd-sidebar--collapsed .rd-sidebar-toggle {
+    margin-top: var(--rd-space-3);
+}
+
+.rd-sidebar--collapsed .rd-sidebar-brand-copy span,
+.rd-sidebar--collapsed .rd-sidebar-user,
+.rd-sidebar--collapsed .rd-sidebar-link-label,
+.rd-sidebar--collapsed .rd-logout-btn {
+    display: none;
+}
+
+.rd-sidebar--collapsed .rd-sidebar-link {
+    justify-content: center;
+    padding-right: var(--rd-space-2);
+    padding-left: var(--rd-space-2);
 }
 
 .rd-sidebar-link:hover {
