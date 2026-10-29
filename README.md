@@ -1,7 +1,7 @@
-# AWSSUG Resource Department
+# Resource Portal
 
-The AWSSUG Resource Department is a full-stack resource management portal for
-the AWS Student User Group Philippines. It provides public request forms and
+This is a full-stack resource management portal for
+a resource department portal. It provides public request forms and
 authenticated, role-based tools for managing clubs, personnel, events,
 departmental requests, and operational tasks.
 
