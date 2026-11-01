@@ -5,6 +5,8 @@ a resource department portal. It provides public request forms and
 authenticated, role-based tools for managing clubs, personnel, events,
 departmental requests, and operational tasks.
 
+<img width="995" height="408" alt="image" src="https://github.com/user-attachments/assets/a4b1b13b-31f9-4455-94fb-c1fd95aeb6e8" />
+
 ## Features
 
 - JWT-based authentication with role-based navigation and authorization
